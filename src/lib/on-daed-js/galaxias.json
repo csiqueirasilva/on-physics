@@ -1,0 +1,138 @@
+[
+    {
+        "nome": "Galáxia de Andrômeda",
+        "r": 1000,
+        "alpha": "0,42,44",
+        "delta": "41,16,09",
+        "img": "imgs/texturas/galaxias/andromeda2.jpg",
+        "wiki": "http://pt.wikipedia.org/w/api.php?action=parse&page=Galáxia_de_Andrômeda&format=json&prop=text"
+    },
+    {
+        "nome": "Galáxia do Triângulo",
+        "r": 1000,
+        "alpha": "1,33,50",
+        "delta": "30,39,36",
+        "img": "imgs/texturas/galaxias/triangulum.jpg",
+        "wiki": "http://pt.wikipedia.org/w/api.php?action=parse&page=Galáxia_do_Triângulo&format=json&prop=text"
+    },
+    {
+        "nome": "Galáxia NGC2419",
+        "r": 1000,
+        "alpha": "7,38,8",
+        "delta": "38,52,54",
+        "img": "imgs/texturas/galaxias/ngc2419.jpg",
+        "wiki": "http://pt.wikipedia.org/w/api.php?action=parse&page=NGC_2419&format=json&prop=text"
+    },
+    {
+        "nome": "Grande Nuvem de Magalhães",
+        "r": 1000,
+        "alpha": "5,23,34",
+        "delta": "-69,45,22",
+        "img": "imgs/texturas/galaxias/grandenuvemmagalhaes.jpg",
+        "wiki": "http://pt.wikipedia.org/w/api.php?action=parse&page=Grande_Nuvem_de_Magalhães&format=json&prop=text"
+    },
+    {
+        "nome": "Galáxia Sextans A",
+        "r": 1000,
+        "alpha": "10,11,0",
+        "delta": "-4,41,34",
+        "img": "imgs/texturas/galaxias/sextansa.jpg",
+        "wiki": "http://pt.wikipedia.org/w/api.php?action=parse&page=Sextans_A&format=json&prop=text"
+    },
+    {
+        "nome": "Galáxia Maffei 2",
+        "r": 1000,
+        "alpha": "2,41,55",
+        "delta": "59,36,15",
+        "img": "imgs/texturas/galaxias/maffei2.jpg",
+        "wiki": "http://pt.wikipedia.org/w/api.php?action=parse&page=Maffei_2&format=json&prop=text"
+    },
+    {
+        "nome": "Galáxia do Sombreiro",
+        "r": 1000,
+        "alpha": "12,39,59",
+        "delta": "11,37,23",
+        "img": "imgs/texturas/galaxias/sombrero.jpg",
+        "wiki": "http://pt.wikipedia.org/w/api.php?action=parse&page=Galáxia_do_Sombreiro&format=json&prop=text"
+    },
+    {
+        "nome": "Galáxia de Bode",
+        "r": 1500,
+        "alpha": "9,55,33",
+        "delta": "69,3,55",
+        "img": "imgs/texturas/galaxias/bode.jpg",
+        "wiki": "http://pt.wikipedia.org/w/api.php?action=parse&page=Galáxia_de_Bode&format=json&prop=text"
+    },
+    {
+        "nome": "Galáxia Messier 82",
+        "r": 1000,
+        "alpha": "9,55,52",
+        "delta": "69,40,47",
+        "img": "imgs/texturas/galaxias/messier82.jpg",
+        "wiki": "http://pt.wikipedia.org/w/api.php?action=parse&page=Messier_82&format=json&prop=text"
+    },
+    {
+        "nome": "Galáxia do Cata-Vento",
+        "r": 1000,
+        "alpha": "14,3,12",
+        "delta": "54,20,57",
+        "img": "imgs/texturas/galaxias/catavento.jpg",
+        "wiki": "http://pt.wikipedia.org/w/api.php?action=parse&page=Galáxia_do_Cata-Vento&format=json&prop=text"
+    },
+    {
+        "nome": "Galáxia de Barnard",
+        "r": 1000,
+        "alpha": "19,44,56",
+        "delta": "-14,48,23",
+        "img": "imgs/texturas/galaxias/barnard.jpg",
+        "wiki": "http://pt.wikipedia.org/w/api.php?action=parse&page=NGC_6822&format=json&prop=text"
+    },
+    {
+        "nome": "Galáxia Centaurus A",
+        "r": 1000,
+        "alpha": "13,25,29",
+        "delta": "-43,0,58",
+        "img": "imgs/texturas/galaxias/CentaurusA.jpg",
+        "wiki": "http://pt.wikipedia.org/w/api.php?action=parse&page=NGC_5128&format=json&prop=text"
+    },
+    {
+        "nome": "Pilares da Criação",
+        "r": 1500,
+        "alpha": "18,18,8",
+        "delta": "-13,47,0",
+        "img": "imgs/texturas/galaxias/pilaresdacriacao.jpg",
+        "wiki": "http://pt.wikipedia.org/w/api.php?action=parse&page=Pilares_da_Criação&format=json&prop=text"
+    },
+    {
+        "nome": "Nebulosa da Águia",
+        "r": 1000,
+        "alpha": "18,18,8",
+        "delta": "-13,47,0",
+        "img": "imgs/texturas/galaxias/nebulosadaaguia.jpg",
+        "wiki": "http://pt.wikipedia.org/w/api.php?action=parse&page=Nebulosa_da_Águia&format=json&prop=text"
+    },
+    {
+        "nome": "Nebulosa do Olho de gato",
+        "r": 1000,
+        "alpha": "17,58,33",
+        "delta": "66,37,59",
+        "img": "imgs/texturas/galaxias/olhodegato.jpg",
+        "wiki": "http://pt.wikipedia.org/w/api.php?action=parse&page=Nebulosa_Olho_de_gato&format=json&prop=text"
+    },
+    {
+        "nome": "Nebulosa Cabeça de Cavalo",
+        "r": 1000,
+        "alpha": "5,40,59",
+        "delta": "-2,27,30",
+        "img": "imgs/texturas/galaxias/cabecadecavalo.jpg",
+        "wiki": "http://pt.wikipedia.org/w/api.php?action=parse&page=Nebulosa_Cabeça_de_Cavalo&format=json&prop=text"
+    },
+    {
+        "nome": "Nebulosa da Tarântula",
+        "r": 500,
+        "alpha": "5,38,38",
+        "delta": "-69,05,7",
+        "img": "imgs/texturas/galaxias/tarantula.jpg",
+        "wiki": "http://pt.wikipedia.org/w/api.php?action=parse&page=Nebulosa_da_Tarântula&format=json&prop=text"
+    }
+]

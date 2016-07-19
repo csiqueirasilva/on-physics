@@ -1,0 +1,3 @@
+[submodule "lib/on-daed-js"]
+	path = lib/on-daed-js
+	url = https://github.com/csiqueirasilva/on-daed-js

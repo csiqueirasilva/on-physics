@@ -1,0 +1,54 @@
+<html>
+	<head>
+		<title>Same mass example</title>
+		
+		<script src="../js/jquery.min.js"></script>
+        <script src="../js/bootstrap.min.js"></script>
+
+        <script src="../js/three.min.js"></script>
+		<script src="../js/stats.min.js"></script>
+		<script src="../js/OrbitControls.js"></script>
+
+		<script src="../lib/on-daed-js/geral.js"></script>
+        <script src="../lib/on-daed-js/vsop87.min.js"></script>
+        <script src="../lib/on-daed-js/astro.js"></script>
+ 
+        <script src="../lib/on-daed-js/ThreeHelper.js"></script>
+        <script src="../lib/on-daed-js/MathHelper.js"></script>
+        <script src="../lib/on-daed-js/3D.js"></script>
+
+        <link href="../css/bootstrap.min.css" rel="stylesheet"/>
+        <link href="../css/bootstrap-responsive.css" rel="stylesheet"/>
+	</head>
+	<body>
+		<script>
+            
+			var element = document.body;
+			
+			ON_DAED["3D"].create(function (scene, camera) {
+					camera.position.set(0, 0, -100);
+					
+					var sphere = new THREE.Mesh(
+						new THREE.SphereGeometry(8, 64, 32),
+						new THREE.MeshBasicMaterial({color: 0xFFFFFF})
+					);
+					
+					scene.add(sphere);
+				}, function (cameraControl, renderer, scene, camera, stats, clock) {
+					cameraControl.update();
+					ON_DAED["3D"].update();
+					renderer.render(scene, camera);
+				},
+                    element,
+                    function (camera, renderer) {
+                        var oc = new THREE.OrbitControls(camera, element);
+						oc.enableDamping = false;
+						controls = oc;
+						return oc;
+                    });
+					
+            ON_DAED['3D'].START_RENDER();
+
+		</script>
+	</body>
+</html>
