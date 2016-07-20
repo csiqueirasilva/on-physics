@@ -1,6 +1,6 @@
 <html>
 	<head>
-		<title>Same mass with one initial speed example</title>
+		<title>Three different bodies example</title>
 		
 		<script src="../core/PhysElement.js"></script>
 		
@@ -30,23 +30,26 @@
 			
 			ON_DAED["3D"].create(function (scene, camera) {
 			
-					var r = 5;
-					var speed = 35;
+					var r = 9;
+					var speed = 200;
+					var particles = [];
 			
 					scene.add(MathHelper.buildAxes(10000));
 					
-					camera.position.set(0, 0, -50);
+					camera.position.set(0, 0, -100);
 					
 					var sphereA = new THREE.Mesh(
 						new THREE.SphereGeometry(1, 64, 32),
-						new THREE.MeshBasicMaterial({color: 0xFF0000})
+						new THREE.MeshBasicMaterial({color: 0x00FF00})
 					);
 					
 					sphereA.physElement = new PhysElement();
-					sphereA.physElement._mass = 1E14;
+					sphereA.physElement._mass = 1E6;
 					sphereA.physElement._radius = 1;
 					sphereA.physElement._position.x = sphereA.position.x = -r;
-					sphereA.physElement._speed.y = speed;
+					sphereA.physElement._speed.y = speed / 4;
+					
+					particles.push(sphereA);
 					
 					scene.add(sphereA);
 					
@@ -56,30 +59,48 @@
 					);
 
 					sphereB.physElement = new PhysElement();
-					sphereB.physElement._mass = 1E14;
+					sphereB.physElement._mass = 1;
 					sphereB.physElement._radius = 1;
-					sphereB.physElement._position.x = sphereA.position.x = r / 2;
-					sphereB.physElement._speed.y = -0;
+					sphereB.physElement._position.x = sphereB.position.x = r * 2;
+					sphereB.physElement._speed.y = speed / 3;
+					
+					particles.push(sphereB);
 					
 					scene.add(sphereB);
+
+					var sphereC = new THREE.Mesh(
+						new THREE.SphereGeometry(1, 64, 32),
+						new THREE.MeshBasicMaterial({color: 0xFF0000})
+					);
+
+					sphereC.physElement = new PhysElement();
+					sphereC.physElement._mass = 5E15;
+					sphereC.physElement._radius = 1;
+					sphereC.physElement._position.y = sphereC.position.y = r;
+					sphereC.physElement._speed.y = speed;
 					
-					var timeInterval = 1 / 1000;
+					particles.push(sphereC);
+					
+					scene.add(sphereC);
+					
+					var timeInterval = 1 / 2000;
 					
 					window.setInterval(function() {
 					
-						sphereA.physElement.applyGravity(sphereB.physElement);
-						sphereB.physElement.applyGravity(sphereA.physElement);
-						
-						sphereA.physElement.flushAccel(timeInterval);
-						sphereB.physElement.flushAccel(timeInterval);
-						
-						sphereA.physElement.exportPosition(sphereA.position);
-						sphereB.physElement.exportPosition(sphereB.position);
+						for(var i = 0; i < particles.length; i++) {
+							for(var j = 0; j < particles.length; j++) {
+								if(i !== j) {
+									particles[i].physElement.applyGravity(particles[j].physElement);
+								}
+							}
+						}
 
-						var vec = sphereB.position.clone().add(sphereA.position.clone().negate());
+						for(var i = 0; i < particles.length; i++) {
+							particles[i].physElement.flushAccel(timeInterval);
+							particles[i].physElement.exportPosition(particles[i].position);
+						}
 						
-						controls.target.x = camera.position.x = (sphereB.position.x + sphereA.position.x) / 2;
-						controls.target.y = camera.position.y = (sphereB.position.y + sphereA.position.y) / 2;
+						controls.target.y = camera.position.y = sphereC.position.y;
 						
 					}, timeInterval * 1000);
 					

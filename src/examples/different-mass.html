@@ -1,6 +1,6 @@
 <html>
 	<head>
-		<title>Same mass example</title>
+		<title>Different mass example</title>
 		
 		<script src="../core/PhysElement.js"></script>
 		
@@ -56,9 +56,9 @@
 					);
 
 					sphereB.physElement = new PhysElement();
-					sphereB.physElement._mass = 1E14;
+					sphereB.physElement._mass = 5E13;
 					sphereB.physElement._radius = 1;
-					sphereB.physElement._position.x = sphereA.position.x = r / 2;
+					sphereB.physElement._position.x = sphereB.position.x = r;
 					sphereB.physElement._speed.y = -0;
 					
 					scene.add(sphereB);
