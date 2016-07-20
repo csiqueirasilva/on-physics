@@ -26,10 +26,12 @@
 		<script>
             
 			var element = document.body;
+			var controls;
 			
 			ON_DAED["3D"].create(function (scene, camera) {
 			
 					var r = 5;
+					var speed = 35;
 			
 					scene.add(MathHelper.buildAxes(10000));
 					
@@ -37,14 +39,14 @@
 					
 					var sphereA = new THREE.Mesh(
 						new THREE.SphereGeometry(1, 64, 32),
-						new THREE.MeshBasicMaterial({color: 0xFFFFFF})
+						new THREE.MeshBasicMaterial({color: 0xFF0000})
 					);
 					
 					sphereA.physElement = new PhysElement();
-					sphereA.physElement._mass = 1E14;
+					sphereA.physElement._mass = 1.5E14;
 					sphereA.physElement._radius = 1;
 					sphereA.physElement._position.x = sphereA.position.x = -r;
-					sphereA.physElement._speed.y = 0;
+					sphereA.physElement._speed.y = speed;
 					
 					scene.add(sphereA);
 					
@@ -74,6 +76,8 @@
 						sphereA.physElement.exportPosition(sphereA.position);
 						sphereB.physElement.exportPosition(sphereB.position);
 
+						controls.target.y = camera.position.y = sphereA.position.y;
+						
 					}, timeInterval * 1000);
 					
 				}, function (cameraControl, renderer, scene, camera, stats, clock) {
