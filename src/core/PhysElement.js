@@ -66,5 +66,154 @@ function PhysElement () {
 		e.y = this._position.y;
 		e.z = this._position.z;
 	};
+
+	/* SRC: http://www.jgiesen.de/kepler/kepler.html */
+	function EccAnom(ec,m,dp) {
+		// arguments:
+		// ec=eccentricity, m=mean anomaly,
+		// dp=number of decimal places
+		var pi=Math.PI, K=pi/180.0;
+
+		var maxIter=30, i=0;
+
+		var delta=Math.pow(10,-dp);
+
+		var E, F;
+
+		m=m/360.0;
+
+		m=2.0*pi*(m-Math.floor(m));
+
+		if (ec<0.8) E=m; else E=pi;
+
+		F = E - ec*Math.sin(m) - m;
+
+		while ((Math.abs(F)>delta) && (i<maxIter)) {
+
+			E = E - F/(1.0-ec*Math.cos(E));
+			F = E - ec*Math.sin(E) - m;
+
+			i = i + 1;
+
+		}
+
+		E=E/K;
+
+		return Math.round(E*Math.pow(10,dp))/Math.pow(10,dp);
+	}
+	
+	function R1 (angle) {
+		return [
+			1, 0, 0,
+			0, Math.cos(angle), -Math.sin(angle),
+			0, Math.sin(angle), Math.cos(angle)
+		];
+	}
+
+	function R3 (angle) {
+		return [
+			Math.cos(angle), -Math.sin(angle), 0,
+			Math.sin(angle), Math.cos(angle), 0,
+			0, 0, 1
+		];
+	}
+	
+	function multMat3x3(m1, m2) {
+	
+		var ret = [];
+		
+		for(var i = 0; i < 3; i++) {
+			for(var j = 0; j < 3; j++) {
+				var line = i * 3;
+				ret[j + line] = m1[line] * m2[j] + m1[line + 1] * m2[j + 3] + m1[line + 2] * m2[j + 6];
+			}
+		}
+	
+		return ret; 
+	}
+	
+	function multMatVet(m, v) {
+		var ret = [];
+		
+		for(var j = 0; j < 3; j++) {
+			var line = j * 3;
+			ret[j] = m[line] * v[0] + m[line + 1] * v[1] + m[line + 2] * v[2];
+		}
+		
+		return ret;
+	}
+	
+	function keplerToCartesian(a, e, I, w, Omega, M, n) {
+		/* 
+			a - SemiMajor Axis
+			e - Eccentricity
+			I - Inclination
+			Omega - Longitude of Nodes
+			w - Argument of Pericenter
+			M - Mean Anomaly
+			n - Mean Motion
+			
+			References:
+			Nico Sneeuw - Dynamic Satellite Geodesy, Pg. 12 (mean motion) and Pg. 23, 24 (kepler to cartesian)
+			Online converter - https://janus.astro.umd.edu/orbits/elements/convertframe.html
+		*/ 
+	
+		// Nico Sneeuw Pg 23 (2.11) / formula sheet (1)
+		var E = EccAnom(e, M, 15);
+		
+		// Nico Sneeuw Pg 23 (2.12) / formula sheet (2)
+		var q = [
+			a * (Math.cos(E) - e),
+			a * Math.sqrt(1 - e * e) * Math.sin(E),
+			0
+		];
+		
+		// Nico Sneeuw Pg 23 (2.12) / formula sheet (2)
+		var qDashScalar = (n * a) / (1 - e * Math.cos(E));
+		var qDash = [
+			qDashScalar * -Math.sin(E),
+			qDashScalar * Math.sqrt(1 - e * e) * Math.cos(E),
+			0
+		];
+		
+		// Nico Sneeuw Pg 24 (2.15 & 2.16) / formula sheet (5 & 6)
+		var multMat = multMat3x3(multMat3x3(R3(-Omega), R1(-I)), R3(-w));
+		var r = multMatVet(multMat, q);
+		var rDash = multMatVet(multMat, qDash);
+		
+		return {
+			position: r, velocity: rDash
+		};
+	}
+	
+	// for debugging with https://janus.astro.umd.edu/orbits/elements/convertframe.html
+	function keplerToCartesianDimensionless(a, e, I, w, Omega, M) {
+		// Uses GM = 1
+		var n = Math.sqrt(1 / (a * a * a));
+		var rad = Math.PI / 180;
+		return keplerToCartesian(a, e, I * rad, w * rad, Omega * rad, M * rad, n);
+	}
+	
+	PhysElement.prototype.fromKepler = function fromKepler (a, e, I, w, Omega, M, n) {
+		/* 
+			a - SemiMajor Axis
+			e - Eccentricity
+			I - Inclination
+			Omega - Longitude of Nodes
+			w - Argument of Pericenter
+			M - Mean Anomaly
+			n - Mean Motion
+			
+			References:
+			Nico Sneeuw - Dynamic Satellite Geodesy, Pg. 12 (mean motion) and Pg. 23, 24 (kepler to cartesian)
+			Online converter - https://janus.astro.umd.edu/orbits/elements/convertframe.html
+		*/ 
+		
+		// Nico Sneeuw Pg 12 (2.3)
+		var mass = (n * n * a * a * a) / GRAVITIONAL_CONSTANT;
+		
+		// todo;
+		
+	};
 	
 })();
