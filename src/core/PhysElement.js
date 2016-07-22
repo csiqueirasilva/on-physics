@@ -180,6 +180,9 @@ function PhysElement () {
 		var multMat = multMat3x3(multMat3x3(R3(-Omega), R1(-I)), R3(-w));
 		var r = multMatVet(multMat, q);
 		var rDash = multMatVet(multMat, qDash);
+		var rotFix = R3(Math.PI / 2);
+		r = multMatVet(rotFix, r);
+		rDash = multMatVet(rotFix, rDash);
 		
 		return {
 			position: r, velocity: rDash
