@@ -38,46 +38,10 @@ function PhysElement () {
 		
 			var scalar = -(GRAVITIONAL_CONSTANT * M) / Math.pow(modVec, 3);
 			
-			b._accel = {
-				x: vec.x * scalar,
-				y: vec.y * scalar,
-				z: vec.z * scalar
-			};
-		
-			/*
-		
-			var b = this;
-			var a = physElement;
-			
-			var M = a._mass;
-			var m = b._mass;
-		
-			vec = {
-				x: b._position.x - a._position.x,
-				y: b._position.y - a._position.y,
-				z: b._position.z - a._position.z
-			};
-			
-			var modVec = Math.sqrt(vec.x * vec.x + vec.y * vec.y + vec.z * vec.z);
-			
-			if(modVec <= this._radius) {
-				console.log('please treat collision!');
-				a._collided = true;
-				b._collided = true;
-				return;
-			}
-			
-			var scalar = -GRAVITIONAL_CONSTANT * (M + m) / Math.pow(modVec, 3);
-			
-			b._accel = {
-				x: vec.x * scalar,
-				y: vec.y * scalar,
-				z: vec.z * scalar
-			};
-			
-			if(this._mass !== 1) console.log(b._accel);
-			
-			*/
+			b._accel.x += vec.x * scalar;
+			b._accel.y += vec.x * scalar;
+			b._accel.z += vec.x * scalar;
+	
 		}
 		
 		return vec;
@@ -92,6 +56,8 @@ function PhysElement () {
 			this._position.x += this._speed.x * t;
 			this._position.y += this._speed.y * t;
 			this._position.z += this._speed.z * t;
+			
+			this._accel.x = this._accel.y = this._accel.z = 0;
 		}
 	};
 	
