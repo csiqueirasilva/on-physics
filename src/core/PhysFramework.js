@@ -1,51 +1,66 @@
-function PhysFramework (particlePath) {
+function PhysFramework (particlePath, updateTime, camPosition) {
 	
 	var element = document.body;
 	var controls;
-
+	
 	this.particles = [];
 	this.sceneAxes = MathHelper.buildAxes(10000);
 	this.mainScene = null;
 	this.mainCamera;
+	this._updateInterval = null;
+	this._updateFrequency = null;
 	
-	var mainScene;
-	var mainCamera;
-	var sceneAxes = this.sceneAxes;
-	var particles = this.particles;
+	var framework = this;
 	
 	this.particleTexture = THREE.ImageUtils.loadTexture(particlePath);
 	
 	ON_DAED["3D"].create(function (scene, camera) {
 
-		mainScene = scene;
+		framework.mainScene = scene;
+		framework.mainCamera = camera;
 
-		scene.add(sceneAxes);
+		scene.add(framework.sceneAxes);
 
-		camera.position.set(0, 0, -100);
+		framework.setCamPosition(camPosition);
 		
 	}, function (cameraControl, renderer, scene, camera, stats, clock) {
 		cameraControl.update();
 		ON_DAED["3D"].update();
 		renderer.render(scene, camera);
 	},
-		element,
-		function (camera, renderer) {
-			var oc = new THREE.OrbitControls(camera, element);
-			oc.enableDamping = false;
-			controls = oc;
-			return oc;
-		});
+	element,
+	function (camera, renderer) {
+		var oc = new THREE.OrbitControls(camera, element);
+		oc.enableDamping = false;
+		controls = oc;
+		return oc;
+	});
 	
-	this.mainCamera = mainCamera;
-	this.mainScene = mainScene;
+	this.timeInterval = 1 / 1000;
 	
 	ON_DAED['3D'].START_RENDER();	
 	
-	var timeInterval = 1 / 2000;
+	this.setObjectUpdate(updateTime);
+}
 
-	window.setInterval(function() {
+PhysFramework.prototype.clearObjectUpdate = function clearObjectUpdate () {
+	if(this._updateInterval !== null) {
+		window.clearInterval(this._updateInterval);
+		this._updateInterval = null;
+	}
+};
 
-		debugger;
+PhysFramework.prototype.setObjectUpdate = function setObjectUpdate (updateTime) {
+	var framework = this;
+	var particles = this.particles;
+	var updateFrequency = !isNaN(updateTime) ? updateTime : 1;
+	
+	if(this._updateInterval !== null) {
+		window.clearInterval(this._updateInterval);
+		this._updateInterval = null;
+	}
+	
+	this._updateInterval = window.setInterval(function() {
 	
 		for(var i = 0; i < particles.length; i++) {
 			for(var j = 0; j < particles.length; j++) {
@@ -56,25 +71,42 @@ function PhysFramework (particlePath) {
 		}
 
 		for(var i = 0; i < particles.length; i++) {
-			particles[i].physElement.flushAccel(timeInterval);
+			particles[i].physElement.flushAccel(framework.timeInterval);
 			particles[i].physElement.exportPosition(particles[i].position);
 		}
 		
-	//			controls.target.y = camera.position.y = sphereC.position.y;
-		
-	}, timeInterval * 1000);
+	}, updateFrequency);
 	
-}
+	this._updateFrequency = updateFrequency;
+};
 
-PhysFramework.prototype.addObject = function addObject (radius, mass, position, speed) {
+PhysFramework.prototype.setCamPosition = function (camPosition) {
+	var finalCamPosition = camPosition instanceof Object ? camPosition : {};
+	
+	if(!finalCamPosition.x) {
+		finalCamPosition.x = 0;
+	}
+	
+	if(!finalCamPosition.y) {
+		finalCamPosition.y = 0;
+	}
+	
+	if(!finalCamPosition.z) {
+		finalCamPosition.z = 0;
+	}
+		
+	this.mainCamera.position.set(finalCamPosition.x, finalCamPosition.y, finalCamPosition.z);
+};
+
+PhysFramework.prototype.addObject = function addObject (radius, mass, position, speed, color) {
 	var particle = new THREE.Sprite(
 		new THREE.SpriteMaterial({
 			map: this.particleTexture,
-			color: 0xFF0000
+			color: !isNaN(color) ? color : parseInt(Math.random() * 0x333333 + 0xCCCCCC)
 		})
 	);
 	
-	particle.scale.multiplyScalar(radius);
+	particle.scale.multiplyScalar(radius * 2);
 	
 	particle.physElement = new PhysElement();
 	particle.physElement._mass = mass;
