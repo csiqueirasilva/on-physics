@@ -1,0 +1,62 @@
+<html>
+	<head>
+		<title>Webworker example</title>
+		
+		<script src="../core/PhysElement.js"></script>
+		<script src="../core/PhysFramework.js"></script>
+		
+		<script src="../js/jquery.min.js"></script>
+        <script src="../js/bootstrap.min.js"></script>
+
+        <script src="../js/three.min.js"></script>
+		<script src="../js/stats.min.js"></script>
+		<script src="../js/OrbitControls.js"></script>
+
+		<script src="../lib/on-daed-js/geral.js"></script>
+        <script src="../lib/on-daed-js/vsop87.min.js"></script>
+        <script src="../lib/on-daed-js/astro.js"></script>
+ 
+        <script src="../lib/on-daed-js/ThreeHelper.js"></script>
+        <script src="../lib/on-daed-js/MathHelper.js"></script>
+        <script src="../lib/on-daed-js/3D.js"></script>
+		
+        <link href="../css/bootstrap.min.css" rel="stylesheet"/>
+        <link href="../css/bootstrap-responsive.css" rel="stylesheet"/>
+		
+	</head>
+	<body>
+		<script>
+            
+			var physFramework = new PhysFramework('../imgs/particleTexture.png');
+
+			var radius = 1;
+			var r = 9;
+			var speed = 200;
+			
+			// OBJECT A
+			physFramework.addObject(
+				radius,
+				1E6,
+				{x: -r, y: 0, z: 0},
+				{x: 0, y: speed / 4, z: 0}
+			);
+
+			// OBJECT B
+			physFramework.addObject(
+				radius,
+				1,
+				{x: r * 2, y: 0, z: 0},
+				{x: 0, y: speed / 3, z: 0}
+			);
+
+			// OBJECT C
+			physFramework.addObject(
+				radius,
+				5E15,
+				{x: 0, y: r, z: 0},
+				{x: 0, y: speed, z: 0}
+			);
+			
+		</script>
+	</body>
+</html>

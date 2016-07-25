@@ -39,8 +39,8 @@ function PhysElement () {
 			var scalar = -(GRAVITIONAL_CONSTANT * M) / Math.pow(modVec, 3);
 			
 			b._accel.x += vec.x * scalar;
-			b._accel.y += vec.x * scalar;
-			b._accel.z += vec.x * scalar;
+			b._accel.y += vec.y * scalar;
+			b._accel.z += vec.z * scalar;
 	
 		}
 		
