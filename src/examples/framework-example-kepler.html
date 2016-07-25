@@ -1,0 +1,80 @@
+<html>
+	<head>
+		<title>Framework with Kepler Parameters example</title>
+		
+		<script src="../core/PhysElement.js"></script>
+		<script src="../core/PhysFramework.js"></script>
+		
+		<script src="../js/jquery.min.js"></script>
+        <script src="../js/bootstrap.min.js"></script>
+
+        <script src="../js/three.min.js"></script>
+		<script src="../js/stats.min.js"></script>
+		<script src="../js/OrbitControls.js"></script>
+
+		<script src="../lib/on-daed-js/geral.js"></script>
+        <script src="../lib/on-daed-js/vsop87.min.js"></script>
+        <script src="../lib/on-daed-js/astro.js"></script>
+ 
+        <script src="../lib/on-daed-js/ThreeHelper.js"></script>
+        <script src="../lib/on-daed-js/MathHelper.js"></script>
+        <script src="../lib/on-daed-js/3D.js"></script>
+		
+        <link href="../css/bootstrap.min.css" rel="stylesheet"/>
+        <link href="../css/bootstrap-responsive.css" rel="stylesheet"/>
+		
+	</head>
+	<body>
+		<script>
+            
+			var physFramework = new PhysFramework(
+				'../imgs/particleTexture.png',
+				1,
+				{x: 0, y: 0, z: -250}
+			);
+
+			var radius = 2.5;
+			var r = 9;
+			var speed = 200;
+			
+			// radius, color, a, e, I, w, Omega, M, n
+			// http://ssd.jpl.nasa.gov/sbdb.cgi?sstr=433&orb=1
+			physFramework.addObjectFromKepler(
+				1, 0xFF0000, 
+					1.45794695462566, // a
+					.2226061532416727, // e
+					10.8281906569983, // I
+					178.7990645902277, // w
+					304.3301856682169, // Omega
+					207.3421245571558, // M
+					.5598755335094359 // n
+			);
+			
+			/*
+			// OBJECT A
+			physFramework.addObject(
+				radius,
+				25E6,
+				{x: r * 6, y: r * 6, z: 0},
+				{x: speed / 4, y: 0, z: 0}
+			);
+
+			// OBJECT B
+			physFramework.addObject(
+				radius,
+				1,
+				{x: r * 3, y: r * 5, z: 0},
+				{x: speed / 3, y: 0, z: 0}
+			);
+
+			// OBJECT C
+			physFramework.addObject(
+				radius * 5,
+				4E15,
+				{x: 0, y: 0, z: 0},
+				{x: 0, y: 0, z: 0}
+			);*/
+			
+		</script>
+	</body>
+</html>

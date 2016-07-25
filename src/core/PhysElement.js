@@ -185,7 +185,16 @@ function PhysElement () {
 		rDash = multMatVet(rotFix, rDash);
 		
 		return {
-			position: r, velocity: rDash
+			position: {
+				x: r[0],
+				y: r[1],
+				z: r[2]
+			}, 
+			speed: {
+				x: rDash[0],
+				y: rDash[1],
+				z: rDash[2]
+			}
 		};
 	}
 	
@@ -197,7 +206,7 @@ function PhysElement () {
 		return keplerToCartesian(a, e, I * rad, w * rad, Omega * rad, M * rad, n);
 	}
 	
-	PhysElement.prototype.fromKepler = function fromKepler (a, e, I, w, Omega, M, n) {
+	PhysElement.prototype.fromKepler = function fromKepler (radius, a, e, I, w, Omega, M, n) {
 		/* 
 			a - SemiMajor Axis
 			e - Eccentricity
@@ -213,10 +222,18 @@ function PhysElement () {
 		*/ 
 		
 		// Nico Sneeuw Pg 12 (2.3)
-		var mass = (n * n * a * a * a) / GRAVITIONAL_CONSTANT;
+		this._mass = (n * n * a * a * a) / GRAVITIONAL_CONSTANT;
 		
-		// todo;
+		this._radius = radius;
 		
+		var rad = Math.PI / 180;
+		
+		var cartesianProperties = keplerToCartesian(a, e, I * rad, w * rad, Omega * rad, M * rad, n);
+		
+		console.log(cartesianProperties);
+		
+		this._speed = cartesianProperties.speed;
+		this._position = cartesianProperties.position;
 	};
 	
 })();

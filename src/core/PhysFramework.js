@@ -123,3 +123,21 @@ PhysFramework.prototype.addObject = function addObject (radius, mass, position, 
 	this.particles.push(particle);
 	this.mainScene.add(particle);
 };
+
+PhysFramework.prototype.addObjectFromKepler = function addObjectFromKepler (radius, color, a, e, I, w, Omega, M, n) {
+	var particle = new THREE.Sprite(
+		new THREE.SpriteMaterial({
+			map: this.particleTexture,
+			color: !isNaN(color) ? color : parseInt(Math.random() * 0x333333 + 0xCCCCCC)
+		})
+	);
+	
+	particle.scale.multiplyScalar(radius * 2);
+	
+	particle.physElement = new PhysElement();
+	
+	particle.physElement.fromKepler(radius, a, e, I, w, Omega, M, n);
+	
+	this.particles.push(particle);
+	this.mainScene.add(particle);
+};
