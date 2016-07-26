@@ -39,11 +39,13 @@
 			
 			// Planetary kepler elements
 			// http://www.met.rdg.ac.uk/~ross/Astronomy/Planets.html
+			// jpl: http://ssd.jpl.nasa.gov/txt/aprx_pos_planets.pdf
 			
 			// radius, color, a, e, I, w, Omega, M, n
 			// http://ssd.jpl.nasa.gov/sbdb.cgi?sstr=433&orb=1
 			physFramework.addObjectFromKepler(
-				1, 0xFF0000, 
+				0.01,
+					0xFF0000, 
 					1.45794695462566, // a
 					.2226061532416727, // e
 					10.8281906569983, // I
@@ -53,10 +55,50 @@
 					.5598755335094359 // n
 			);
 			
-			// OBJECT A
-			physFramework.addObject(
+			// MERCURY
+			physFramework.addObjectFromKeplerNoMotion(
 				0.01,
-				1.989E30,
+				0xFFFF00,
+				0.38709893,
+				0.20563069,
+				7.00487,
+				77.45645,
+				48.33167,
+				252.25084 - 48.33167 - 77.45645,
+				4.3010676659831718871526550236866e-8
+			);
+			
+			// EARTH
+			physFramework.addObjectFromKeplerNoMotion(
+				0.01,
+				0xFFFF00,
+				1.00000011,
+				0.01671022,
+				0.00005,
+				102.94719,
+				-11.26064,
+				100.46435 - -11.26064 - 102.94719,
+				7.6589832425935091564731669377077e-7
+			);
+			
+			// ref: http://ssd.jpl.nasa.gov/?sat_elem
+			// MOON
+			physFramework.addObjectFromKeplerNoMotion(
+				0.01,
+				0xFFFFFF,
+				0.00256955529,
+				0.0554,
+				5.16,
+				318.15,
+				125.08,
+				135.27,
+				1.5525701760588276886092059676165e-8
+			);
+			
+			// SUN
+			physFramework.addObject(
+				0.05,
+				1,
 				{x: 0, y: 0, z: 0},
 				{x: 0, y: 0, z: 0},
 				0xFFFF00

@@ -232,8 +232,37 @@ function PhysElement () {
 		
 		this._speed = cartesianProperties.speed;
 		this._position = cartesianProperties.position;
+	};
+	
+	PhysElement.prototype.fromKeplerNoMotion = function fromKeplerNoMotion (radius, a, e, I, w, Omega, M, mass) {
+		/* 
+			a - SemiMajor Axis
+			e - Eccentricity
+			I - Inclination
+			Omega - Longitude of Nodes
+			w - Argument of Pericenter
+			M - Mean Anomaly
+			mass - mass
+			
+			References:
+			Nico Sneeuw - Dynamic Satellite Geodesy, Pg. 12 (mean motion) and Pg. 23, 24 (kepler to cartesian)
+			Online converter - https://janus.astro.umd.edu/orbits/elements/convertframe.html
+		*/ 
 		
-		console.log(this._position);
+		// Nico Sneeuw Pg 12 (2.3)
+		var n = Math.sqrt((mass * GRAVITIONAL_CONSTANT) / (a * a * a));
+		
+		this._mass = mass;
+		this._radius = radius;
+		
+		var rad = Math.PI / 180;
+		
+		var cartesianProperties = keplerToCartesian(a, e, I * rad, w * rad, Omega * rad, M * rad, n);
+		
+		this._speed = cartesianProperties.speed;
+		this._position = cartesianProperties.position;
+		
+		console.log(this._speed);
 	};
 	
 })();
