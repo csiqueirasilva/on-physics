@@ -8,7 +8,7 @@ function PhysElement () {
 }
 
 (function () {
-	var GRAVITIONAL_CONSTANT = 6.674E-11;
+	var GRAVITIONAL_CONSTANT = 4 * Math. PI * Math.PI /* AU^3 * yr^-2 * solarMass^-1 */;
 	
 	PhysElement.prototype.applyGravity = function applyGravity (physElement) {
 		var vec = null;
@@ -230,10 +230,10 @@ function PhysElement () {
 		
 		var cartesianProperties = keplerToCartesian(a, e, I * rad, w * rad, Omega * rad, M * rad, n);
 		
-		console.log(cartesianProperties);
-		
 		this._speed = cartesianProperties.speed;
 		this._position = cartesianProperties.position;
+		
+		console.log(this._position);
 	};
 	
 })();

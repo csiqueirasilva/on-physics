@@ -30,7 +30,7 @@
 			ON_DAED["3D"].create(function (scene, camera) {
 			
 					var r = 5;
-					var speed = 15;
+					var speed = 7.5;
 			
 					scene.add(MathHelper.buildAxes(10000));
 					
@@ -42,7 +42,7 @@
 					);
 					
 					sphereA.physElement = new PhysElement();
-					sphereA.physElement._mass = 1.5E14;
+					sphereA.physElement._mass = 75;
 					sphereA.physElement._radius = 1;
 					sphereA.physElement._position.x = sphereA.position.x = -r;
 					sphereA.physElement._speed.y = speed;
@@ -55,7 +55,7 @@
 					);
 
 					sphereB.physElement = new PhysElement();
-					sphereB.physElement._mass = 100E11;
+					sphereB.physElement._mass = 7.5;
 					sphereB.physElement._radius = 1;
 					sphereB.physElement._position.x = sphereA.position.x = r / 2;
 					sphereB.physElement._speed.y = -speed;

@@ -29,8 +29,8 @@
             
 			var physFramework = new PhysFramework(
 				'../imgs/particleTexture.png',
-				1,
-				{x: 0, y: 0, z: -250}
+				26,
+				{x: 0, y: 0, z: -2}
 			);
 
 			var radius = 2.5;
@@ -50,30 +50,14 @@
 					.5598755335094359 // n
 			);
 			
-			/*
 			// OBJECT A
 			physFramework.addObject(
-				radius,
-				25E6,
-				{x: r * 6, y: r * 6, z: 0},
-				{x: speed / 4, y: 0, z: 0}
-			);
-
-			// OBJECT B
-			physFramework.addObject(
-				radius,
-				1,
-				{x: r * 3, y: r * 5, z: 0},
-				{x: speed / 3, y: 0, z: 0}
-			);
-
-			// OBJECT C
-			physFramework.addObject(
-				radius * 5,
-				4E15,
+				0.01,
+				1.989E30,
 				{x: 0, y: 0, z: 0},
-				{x: 0, y: 0, z: 0}
-			);*/
+				{x: 0, y: 0, z: 0},
+				0xFFFF00
+			);
 			
 		</script>
 	</body>

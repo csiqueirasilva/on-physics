@@ -31,23 +31,23 @@
 			ON_DAED["3D"].create(function (scene, camera) {
 			
 					var r = 9;
-					var speed = 200;
+					var speed = 1;
 					var particles = [];
 			
 					scene.add(MathHelper.buildAxes(10000));
 					
-					camera.position.set(0, 0, -100);
+					camera.position.set(0, 0, -1000);
 					
 					var sphereA = new THREE.Mesh(
-						new THREE.SphereGeometry(1, 64, 32),
+						new THREE.SphereGeometry(2, 64, 32),
 						new THREE.MeshBasicMaterial({color: 0x00FF00})
 					);
 					
 					sphereA.physElement = new PhysElement();
-					sphereA.physElement._mass = 1E6;
-					sphereA.physElement._radius = 1;
-					sphereA.physElement._position.x = sphereA.position.x = -r;
-					sphereA.physElement._speed.y = speed / 4;
+					sphereA.physElement._mass = 0.4;
+					sphereA.physElement._radius = 0.01;
+					sphereA.physElement._position.x = sphereA.position.x = r * 50;
+					sphereA.physElement._speed.y = speed * 2.65;
 					
 					particles.push(sphereA);
 					
@@ -59,25 +59,26 @@
 					);
 
 					sphereB.physElement = new PhysElement();
-					sphereB.physElement._mass = 1;
-					sphereB.physElement._radius = 1;
-					sphereB.physElement._position.x = sphereB.position.x = r * 2;
-					sphereB.physElement._speed.y = speed / 3;
+					sphereB.physElement._mass = 0.0042;
+					sphereB.physElement._radius = 0.01;
+					sphereB.physElement._position.x = sphereB.position.x = r * 50.25;
+					sphereB.physElement._speed.y = speed * 0.35;
+					sphereB.physElement._speed.x = speed * -2;
 					
 					particles.push(sphereB);
 					
 					scene.add(sphereB);
 
 					var sphereC = new THREE.Mesh(
-						new THREE.SphereGeometry(1, 64, 32),
+						new THREE.SphereGeometry(20, 64, 32),
 						new THREE.MeshBasicMaterial({color: 0xFF0000})
 					);
 
 					sphereC.physElement = new PhysElement();
-					sphereC.physElement._mass = 5E15;
+					sphereC.physElement._mass = 100;
 					sphereC.physElement._radius = 1;
 					sphereC.physElement._position.y = sphereC.position.y = r;
-					sphereC.physElement._speed.y = speed;
+					sphereC.physElement._speed.y = speed * 0;
 					
 					particles.push(sphereC);
 					
@@ -96,11 +97,11 @@
 						}
 
 						for(var i = 0; i < particles.length; i++) {
-							particles[i].physElement.flushAccel(timeInterval);
+							particles[i].physElement.flushAccel(timeInterval * 200);
 							particles[i].physElement.exportPosition(particles[i].position);
 						}
 						
-						controls.target.y = camera.position.y = sphereC.position.y;
+						//controls.target.y = camera.position.y = sphereC.position.y;
 						
 					}, timeInterval * 1000);
 					
