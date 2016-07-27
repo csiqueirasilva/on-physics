@@ -8,7 +8,7 @@ function PhysElement () {
 }
 
 (function () {
-	var GRAVITIONAL_CONSTANT = 4 * Math. PI * Math.PI /* AU^3 * yr^-2 * solarMass^-1 */;
+	var GRAVITIONAL_CONSTANT = 4 * Math.PI * Math.PI /* AU^3 * yr^-2 * solarMass^-1 */;
 	
 	PhysElement.prototype.applyGravity = function applyGravity (physElement) {
 		var vec = null;
@@ -49,15 +49,9 @@ function PhysElement () {
 	
 	PhysElement.prototype.flushAccel = function flushAccel (t) {
 		if(!this._collided) {
-			this._speed.x += this._accel.x * t;
-			this._speed.y += this._accel.y * t;
-			this._speed.z += this._accel.z * t;
-			
-			this._position.x += this._speed.x * t;
-			this._position.y += this._speed.y * t;
-			this._position.z += this._speed.z * t;
-			
-			this._accel.x = this._accel.y = this._accel.z = 0;
+			this._position.x += this._speed.x * t + (this._accel.x * t * t) / 2;
+			this._position.y += this._speed.y * t + (this._accel.y * t * t) / 2;
+			this._position.z += this._speed.z * t + (this._accel.z * t * t) / 2;
 		}
 	};
 	
@@ -250,7 +244,7 @@ function PhysElement () {
 		*/ 
 		
 		// Nico Sneeuw Pg 12 (2.3)
-		var n = Math.sqrt((mass * GRAVITIONAL_CONSTANT) / (a * a * a));
+		var n = Math.sqrt((mass * GRAVITIONAL_CONSTANT) / (a * a * a)) * 365.25; 
 		
 		this._mass = mass;
 		this._radius = radius;
@@ -262,7 +256,7 @@ function PhysElement () {
 		this._speed = cartesianProperties.speed;
 		this._position = cartesianProperties.position;
 		
-		console.log(this._speed);
+		console.log(this._position, this._speed);
 	};
 	
 })();

@@ -20,6 +20,12 @@ function PhysFramework (particlePath, updateTime, camPosition) {
 		framework.mainCamera = camera;
 
 		scene.add(framework.sceneAxes);
+		
+		var sDebug = new THREE.Mesh(new THREE.SphereGeometry(0.01, 64, 32), new THREE.MeshBasicMaterial());
+		
+		sDebug.position.y = 1;
+
+		scene.add(sDebug);
 
 		framework.setCamPosition(camPosition);
 		
@@ -36,7 +42,7 @@ function PhysFramework (particlePath, updateTime, camPosition) {
 		return oc;
 	});
 	
-	this.timeInterval = 1 / 1000;
+	this.timeInterval = 1 / (365);
 	
 	ON_DAED['3D'].START_RENDER();	
 	
@@ -67,6 +73,11 @@ PhysFramework.prototype.setObjectUpdate = function setObjectUpdate (updateTime) 
 				if(i !== j) {
 					particles[i].physElement.applyGravity(particles[j].physElement);
 				}
+			}
+			
+			if(i !== 1 && (particles[i].position.x > -0.01 && particles[i].position.x < 0.01)) {
+				console.log(new Number(particles[i].position.length() * 149600000)
+							.toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, '$1,'));
 			}
 		}
 
@@ -140,6 +151,8 @@ PhysFramework.prototype.addObjectFromKepler = function addObjectFromKepler (radi
 	
 	this.particles.push(particle);
 	this.mainScene.add(particle);
+	
+	return particle;
 };
 
 PhysFramework.prototype.addObjectFromKeplerNoMotion = function addObjectFromKepler (radius, color, a, e, I, w, Omega, M, mass) {
@@ -158,4 +171,6 @@ PhysFramework.prototype.addObjectFromKeplerNoMotion = function addObjectFromKepl
 	
 	this.particles.push(particle);
 	this.mainScene.add(particle);
+	
+	return particle;
 };
