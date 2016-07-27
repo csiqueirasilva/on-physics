@@ -75,8 +75,8 @@ PhysFramework.prototype.setObjectUpdate = function setObjectUpdate (updateTime) 
 				}
 			}
 			
-			if(i !== 1 && (particles[i].position.x > -0.01 && particles[i].position.x < 0.01)) {
-				console.log(new Number(particles[i].position.length() * 149600000)
+			if(i !== 1 && (particles[i].position.y > -0.01 && particles[i].position.y < 0.01)) {
+				console.log(new Number(particles[i].position.length() * 1.496e+8)
 							.toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, '$1,'));
 			}
 		}

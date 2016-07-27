@@ -244,7 +244,7 @@ function PhysElement () {
 		*/ 
 		
 		// Nico Sneeuw Pg 12 (2.3)
-		var n = Math.sqrt((mass * GRAVITIONAL_CONSTANT) / (a * a * a)) * 365.25; 
+		var n = Math.sqrt((mass * GRAVITIONAL_CONSTANT) / (a * a * a)) * 365.25; // rad/DAY -> rad/YEAR 
 		
 		this._mass = mass;
 		this._radius = radius;
@@ -254,6 +254,11 @@ function PhysElement () {
 		var cartesianProperties = keplerToCartesian(a, e, I * rad, w * rad, Omega * rad, M * rad, n);
 		
 		this._speed = cartesianProperties.speed;
+		
+		this._speed.x *= 1.12;
+		this._speed.y *= 1.12;
+		this._speed.z *= 1.12;
+		
 		this._position = cartesianProperties.position;
 		
 		console.log(this._position, this._speed);
