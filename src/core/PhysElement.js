@@ -8,7 +8,8 @@ function PhysElement () {
 }
 
 (function () {
-	var GRAVITIONAL_CONSTANT = 4 * Math.PI * Math.PI /* AU^3 * yr^-2 * solarMass^-1 */;
+	var k = 0.01720209895; // gaussian gravitational constant
+	var GRAVITIONAL_CONSTANT = k * k /* AU^3 * day^-2 * sunMass^-1 */;
 	
 	PhysElement.prototype.applyGravity = function applyGravity (physElement) {
 		var vec = null;
@@ -137,7 +138,7 @@ function PhysElement () {
 		return ret;
 	}
 	
-	function keplerToCartesian(a, e, I, w, Omega, M, n) {
+	function keplerToCartesian(a, e, I, w, Omega, M) {
 		/* 
 			a - SemiMajor Axis
 			e - Eccentricity
@@ -149,6 +150,7 @@ function PhysElement () {
 			
 			References:
 			Nico Sneeuw - Dynamic Satellite Geodesy, Pg. 12 (mean motion) and Pg. 23, 24 (kepler to cartesian)
+			Oliver Montenbruck, Thomas Pfleger - Astronomy on the Personal Computer, Position in the Orbit, Pg. 63, 64
 			Online converter - https://janus.astro.umd.edu/orbits/elements/convertframe.html
 		*/ 
 	
@@ -163,10 +165,13 @@ function PhysElement () {
 		];
 		
 		// Nico Sneeuw Pg 23 (2.12) / formula sheet (2)
-		var qDashScalar = (n * a) / (1 - e * Math.cos(E));
+		// Oliver, Thomas Pg 64
+		var qDashXScalar = -Math.sqrt(GRAVITIONAL_CONSTANT / a);
+		var qDashYScalar = Math.sqrt((GRAVITIONAL_CONSTANT * (1 - e * e)) / a);
+		var qDashDiv = (1 - e * Math.cos(E));
 		var qDash = [
-			qDashScalar * -Math.sin(E),
-			qDashScalar * Math.sqrt(1 - e * e) * Math.cos(E),
+			qDashXScalar * (Math.sin(E) / qDashDiv),
+			qDashYScalar * (Math.cos(E) / qDashDiv),
 			0
 		];
 		
@@ -200,7 +205,7 @@ function PhysElement () {
 		return keplerToCartesian(a, e, I * rad, w * rad, Omega * rad, M * rad, n);
 	}
 	
-	PhysElement.prototype.fromKepler = function fromKepler (radius, a, e, I, w, Omega, M, n) {
+	PhysElement.prototype.fromKepler = function fromKepler (mass, radius, a, e, I, w, Omega, M) {
 		/* 
 			a - SemiMajor Axis
 			e - Eccentricity
@@ -212,56 +217,19 @@ function PhysElement () {
 			
 			References:
 			Nico Sneeuw - Dynamic Satellite Geodesy, Pg. 12 (mean motion) and Pg. 23, 24 (kepler to cartesian)
+			Oliver Montenbruck, Thomas Pfleger - Astronomy on the Personal Computer, Position in the Orbit, Pg. 63, 64
 			Online converter - https://janus.astro.umd.edu/orbits/elements/convertframe.html
 		*/ 
-		
-		// Nico Sneeuw Pg 12 (2.3)
-		this._mass = (n * n * a * a * a) / GRAVITIONAL_CONSTANT;
-		
-		this._radius = radius;
-		
-		var rad = Math.PI / 180;
-		
-		var cartesianProperties = keplerToCartesian(a, e, I * rad, w * rad, Omega * rad, M * rad, n);
-		
-		this._speed = cartesianProperties.speed;
-		this._position = cartesianProperties.position;
-	};
-	
-	PhysElement.prototype.fromKeplerNoMotion = function fromKeplerNoMotion (radius, a, e, I, w, Omega, M, mass) {
-		/* 
-			a - SemiMajor Axis
-			e - Eccentricity
-			I - Inclination
-			Omega - Longitude of Nodes
-			w - Argument of Pericenter
-			M - Mean Anomaly
-			mass - mass
-			
-			References:
-			Nico Sneeuw - Dynamic Satellite Geodesy, Pg. 12 (mean motion) and Pg. 23, 24 (kepler to cartesian)
-			Online converter - https://janus.astro.umd.edu/orbits/elements/convertframe.html
-		*/ 
-		
-		// Nico Sneeuw Pg 12 (2.3)
-		var n = Math.sqrt((mass * GRAVITIONAL_CONSTANT) / (a * a * a)) * 365.25; // rad/DAY -> rad/YEAR 
 		
 		this._mass = mass;
 		this._radius = radius;
 		
 		var rad = Math.PI / 180;
 		
-		var cartesianProperties = keplerToCartesian(a, e, I * rad, w * rad, Omega * rad, M * rad, n);
+		var cartesianProperties = keplerToCartesian(a, e, I * rad, w * rad, Omega * rad, M * rad);
 		
 		this._speed = cartesianProperties.speed;
-		
-		this._speed.x *= 1.12;
-		this._speed.y *= 1.12;
-		this._speed.z *= 1.12;
-		
 		this._position = cartesianProperties.position;
-		
-		console.log(this._position, this._speed);
 	};
 	
 })();

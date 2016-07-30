@@ -21,12 +21,6 @@ function PhysFramework (particlePath, updateTime, camPosition) {
 
 		scene.add(framework.sceneAxes);
 		
-		var sDebug = new THREE.Mesh(new THREE.SphereGeometry(0.01, 64, 32), new THREE.MeshBasicMaterial());
-		
-		sDebug.position.y = 1;
-
-		scene.add(sDebug);
-
 		framework.setCamPosition(camPosition);
 		
 	}, function (cameraControl, renderer, scene, camera, stats, clock) {
@@ -42,11 +36,55 @@ function PhysFramework (particlePath, updateTime, camPosition) {
 		return oc;
 	});
 	
-	this.timeInterval = 1 / (365);
+	this.timeInterval = 0.1;
 	
 	ON_DAED['3D'].START_RENDER();	
 	
 	this.setObjectUpdate(updateTime);
+}
+
+PhysFramework.prototype.addDebugAxisMarkers = function addDebugAxisMarkers (unit) {
+
+	var pos = unit || 1;
+
+	if(!this._debugAxisMarkers) {
+		this._debugAxisMarkers = new THREE.Object3D();
+		
+		var geo = new THREE.SphereGeometry(0.01, 64, 32);
+		var mat = new THREE.MeshBasicMaterial({color: 0xFFFFFF});
+		
+		var sDebugPosY = new THREE.Mesh(geo, mat);
+		sDebugPosY.position.y = pos;
+		this._debugAxisMarkers.add(sDebugPosY);
+
+		var sDebugNegY = new THREE.Mesh(geo, mat);
+		sDebugNegY.position.y = -pos;
+		this._debugAxisMarkers.add(sDebugNegY);
+		
+		var sDebugPosX = new THREE.Mesh(geo, mat);
+		sDebugPosX.position.x = pos;
+		this._debugAxisMarkers.add(sDebugPosX);
+		
+		var sDebugNegX = new THREE.Mesh(geo, mat);
+		sDebugNegX.position.x = -pos;
+		this._debugAxisMarkers.add(sDebugNegX);
+		
+		this.mainScene.add(this._debugAxisMarkers);
+	} else {
+		this._debugAxisMarkers.children[0].position.y = pos;
+		this._debugAxisMarkers.children[1].position.y = -pos;
+		this._debugAxisMarkers.children[2].position.x = pos;
+		this._debugAxisMarkers.children[3].position.x = -pos;
+		
+		this._debugAxisMarkers.visible = true;
+	}
+	
+};
+
+PhysFramework.prototype.removeDebugAxisMarkers = function removeAxisMarkers () {
+	if(this._debugAxisMarkers instanceof THREE.Object3D) {
+		this._debugAxisMarkers.visible = false;
+	}
 }
 
 PhysFramework.prototype.clearObjectUpdate = function clearObjectUpdate () {
@@ -135,7 +173,7 @@ PhysFramework.prototype.addObject = function addObject (radius, mass, position, 
 	this.mainScene.add(particle);
 };
 
-PhysFramework.prototype.addObjectFromKepler = function addObjectFromKepler (radius, color, a, e, I, w, Omega, M, n) {
+PhysFramework.prototype.addObjectFromKepler = function addObjectFromKepler (mass, radius, color, a, e, I, w, Omega, M) {
 	var particle = new THREE.Sprite(
 		new THREE.SpriteMaterial({
 			map: this.particleTexture,
@@ -147,27 +185,7 @@ PhysFramework.prototype.addObjectFromKepler = function addObjectFromKepler (radi
 	
 	particle.physElement = new PhysElement();
 	
-	particle.physElement.fromKepler(radius, a, e, I, w, Omega, M, n);
-	
-	this.particles.push(particle);
-	this.mainScene.add(particle);
-	
-	return particle;
-};
-
-PhysFramework.prototype.addObjectFromKeplerNoMotion = function addObjectFromKepler (radius, color, a, e, I, w, Omega, M, mass) {
-	var particle = new THREE.Sprite(
-		new THREE.SpriteMaterial({
-			map: this.particleTexture,
-			color: !isNaN(color) ? color : parseInt(Math.random() * 0x333333 + 0xCCCCCC)
-		})
-	);
-	
-	particle.scale.multiplyScalar(radius * 2);
-	
-	particle.physElement = new PhysElement();
-	
-	particle.physElement.fromKeplerNoMotion(radius, a, e, I, w, Omega, M, mass);
+	particle.physElement.fromKepler(mass, radius, a, e, I, w, Omega, M);
 	
 	this.particles.push(particle);
 	this.mainScene.add(particle);
