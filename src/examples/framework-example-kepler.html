@@ -23,8 +23,25 @@
         <link href="../css/bootstrap.min.css" rel="stylesheet"/>
         <link href="../css/bootstrap-responsive.css" rel="stylesheet"/>
 		
+		<style>
+			#info-box {
+				position: absolute;
+				left: 1%;
+				bottom: 1%;
+				width: 200px;
+				height: 200px;
+				background: #ffffff;
+				padding: 5px;
+			}
+		</style>
+		
 	</head>
 	<body>
+	
+		<div id="info-box">
+			<div id="info-distancia"></div>
+		</div>
+	
 		<script>
             
 			var physFramework = new PhysFramework(
@@ -39,44 +56,11 @@
 			var r = 9;
 			var speed = 200;
 			
-			// Planetary kepler elements
-			// http://www.met.rdg.ac.uk/~ross/Astronomy/Planets.html
-			// jpl: http://ssd.jpl.nasa.gov/txt/aprx_pos_planets.pdf
-			
-			// radius, color, a, e, I, w, Omega, M, n
-			// http://ssd.jpl.nasa.gov/sbdb.cgi?sstr=433&orb=1
-			/*physFramework.addObjectFromKepler(
-				0.01,
-					0xFF0000, 
-					1.45794695462566, // a
-					.2226061532416727, // e
-					10.8281906569983, // I
-					178.7990645902277, // w
-					304.3301856682169, // Omega
-					207.3421245571558, // M
-					.5598755335094359 // n
-			);*/
-			
-			/*
-			// MERCURY
-			physFramework.addObjectFromKeplerNoMotion(
-				0.01,
-				0xFFFF00,
-				0.38709893,
-				0.20563069,
-				7.00487,
-				77.45645,
-				48.33167,
-				252.25084 - 48.33167 - 77.45645,
-				4.3010676659831718871526550236866e-8
-			);
-			*/
-			
 			// EARTH
 			var earth = physFramework.addObjectFromKepler(
 				0.000003003,
 				0.01,
-				0xFFFF00,
+				0x0077FF,
 				1.00000011,
 				0.01671022,
 				0.00005,
@@ -85,21 +69,12 @@
 				100.46435 - 102.94719
 			);
 			
-			/*
-			// ref: http://ssd.jpl.nasa.gov/?sat_elem
-			// MOON
-			physFramework.addObjectFromKeplerNoMotion(
-				0.01,
-				0xFFFFFF,
-				0.00256955529,
-				0.0554,
-				5.16,
-				318.15,
-				125.08,
-				135.27,
-				1.5525701760588276886092059676165e-8
-			);
-			*/
+			window.setInterval(function() {
+				
+				var e = document.getElementById('info-distancia');
+				e.innerHTML = "d = " + (earth.position.length() * 149597870).toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+				
+			}, 20);
 			
 			// SUN
 			physFramework.addObject(

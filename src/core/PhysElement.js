@@ -50,9 +50,15 @@ function PhysElement () {
 	
 	PhysElement.prototype.flushAccel = function flushAccel (t) {
 		if(!this._collided) {
-			this._position.x += this._speed.x * t + (this._accel.x * t * t) / 2;
-			this._position.y += this._speed.y * t + (this._accel.y * t * t) / 2;
-			this._position.z += this._speed.z * t + (this._accel.z * t * t) / 2;
+			this._speed.x += this._accel.x * t;
+			this._speed.y += this._accel.y * t;
+			this._speed.z += this._accel.z * t;
+			
+			this._position.x += this._speed.x * t;
+			this._position.y += this._speed.y * t;
+			this._position.z += this._speed.z * t;
+			
+			this._accel.x = this._accel.y = this._accel.z = 0;
 		}
 	};
 	

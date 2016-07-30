@@ -36,7 +36,7 @@ function PhysFramework (particlePath, updateTime, camPosition) {
 		return oc;
 	});
 	
-	this.timeInterval = 0.1;
+	this.timeInterval = 0.04;
 	
 	ON_DAED['3D'].START_RENDER();	
 	
@@ -111,11 +111,6 @@ PhysFramework.prototype.setObjectUpdate = function setObjectUpdate (updateTime) 
 				if(i !== j) {
 					particles[i].physElement.applyGravity(particles[j].physElement);
 				}
-			}
-			
-			if(i !== 1 && (particles[i].position.y > -0.01 && particles[i].position.y < 0.01)) {
-				console.log(new Number(particles[i].position.length() * 1.496e+8)
-							.toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, '$1,'));
 			}
 		}
 
