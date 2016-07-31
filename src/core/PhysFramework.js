@@ -10,6 +10,8 @@ function PhysFramework (particlePath, updateTime, camPosition) {
 	this._updateInterval = null;
 	this._updateFrequency = null;
 	
+	this._accTime = 0;
+	
 	var framework = this;
 	
 	this.particleTexture = THREE.ImageUtils.loadTexture(particlePath);
@@ -36,7 +38,7 @@ function PhysFramework (particlePath, updateTime, camPosition) {
 		return oc;
 	});
 	
-	this.timeInterval = 0.04;
+	this.timeInterval = 0.05;
 	
 	ON_DAED['3D'].START_RENDER();	
 	
@@ -118,6 +120,8 @@ PhysFramework.prototype.setObjectUpdate = function setObjectUpdate (updateTime) 
 			particles[i].physElement.flushAccel(framework.timeInterval);
 			particles[i].physElement.exportPosition(particles[i].position);
 		}
+		
+		framework._accTime += framework.timeInterval;
 		
 	}, updateFrequency);
 	
