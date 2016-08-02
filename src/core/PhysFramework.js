@@ -192,6 +192,14 @@ PhysFramework.prototype.addObjectFromKepler = function addObjectFromKepler (mass
 	return particle;
 };
 
+PhysFramework.prototype.addTracingLine = function addTracingLine (obj, nVerts) {
+	if(obj instanceof THREE.Sprite) {
+		var color = obj.material.color.getHex() * 1.25;
+		var trace = new PhysTrace(obj, color, nVerts);
+		this.mainScene.add(trace.trace);
+	}
+};
+
 PhysFramework.prototype.addObjectFromKepler2 = function addObjectFromKepler2 (mass, radius, color, a, e, I, L, longitudeOfPerihelion, Omega) {
 
 	var w = longitudeOfPerihelion - Omega;

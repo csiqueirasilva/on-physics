@@ -1,7 +1,8 @@
 <html>
 	<head>
 		<title>Framework with Kepler Parameters example</title>
-		
+
+		<script src="../core/PhysTrace.js"></script>
 		<script src="../core/PhysElement.js"></script>
 		<script src="../core/PhysFramework.js"></script>
 		
@@ -81,6 +82,8 @@
 				0
 			);
 			
+			physFramework.addTracingLine(earth, 350);
+			
 			// VENUS
 			var venus = physFramework.addObjectFromKepler2(
 				EARTH_MASS * 0.815,
@@ -93,6 +96,8 @@
 				131.60246718,
 				76.67984255
 			);
+			
+			physFramework.addTracingLine(venus, 200);
 			
 			// MERCURY
 			var mercury = physFramework.addObjectFromKepler2(
@@ -107,6 +112,8 @@
 				48.33076593
 			);
 			
+			physFramework.addTracingLine(mercury, 120);
+			
 			// MARS
 			var mars = physFramework.addObjectFromKepler2(
 				EARTH_MASS * 0.107,
@@ -119,6 +126,8 @@
 				-23.94362959,
 				49.55953891
 			);
+			
+			physFramework.addTracingLine(mars, 600);
 			
 			// JUPITER
 			var jupiter = physFramework.addObjectFromKepler2(
@@ -133,6 +142,8 @@
 				100.47390909
 			);
 			
+			physFramework.addTracingLine(jupiter, 500);
+			
 			var saturn = physFramework.addObjectFromKepler2(
 				EARTH_MASS * 95.16,
 				0.275,
@@ -144,6 +155,8 @@
 				92.59887831,
 				113.66242448
 			);
+
+			physFramework.addTracingLine(saturn, 600);
 
 			var uranus = physFramework.addObjectFromKepler2(
 				EARTH_MASS * 14.54,
@@ -157,6 +170,8 @@
 				74.01692503
 			);
 			
+			physFramework.addTracingLine(uranus, 700);
+
 			var neptune = physFramework.addObjectFromKepler2(
 				EARTH_MASS * 17.15,
 				0.35,
@@ -169,6 +184,8 @@
 				131.78422574
 			);
 			
+			physFramework.addTracingLine(neptune, 800);
+
 			window.setInterval(function() {
 				
 				var e = document.getElementById('info-distancia');
@@ -206,7 +223,9 @@
 				0xFFFF00
 			);
 			
-			
+			window.setTimeout(function() {
+				StartTracingLines();
+			}, 500);
 			
 		</script>
 	</body>
