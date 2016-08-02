@@ -38,7 +38,7 @@ function PhysFramework (particlePath, updateTime, camPosition) {
 		return oc;
 	});
 	
-	this.timeInterval = 0.05;
+	this.timeInterval = 0.0;
 	
 	ON_DAED['3D'].START_RENDER();	
 	
@@ -191,3 +191,55 @@ PhysFramework.prototype.addObjectFromKepler = function addObjectFromKepler (mass
 	
 	return particle;
 };
+
+PhysFramework.prototype.addObjectFromKepler2 = function addObjectFromKepler2 (mass, radius, color, a, e, I, L, longitudeOfPerihelion, Omega) {
+
+	var w = longitudeOfPerihelion - Omega;
+	var M = (L - longitudeOfPerihelion) % 360;
+	
+	if(M > 180) {
+		M -= 180;
+	}
+	
+	return this.addObjectFromKepler(mass, radius, color, a, e, I, w, Omega, M);
+};
+
+PhysFramework.prototype.createReferenceAxis = function createReferenceAxis (obj) {
+	
+	var debugAxisMarkers = null;
+	
+	if(obj instanceof THREE.Object3D && obj.physElement instanceof PhysElement) {
+	
+		obj.physElement.exportPosition(earth.position);
+		
+		// reference axis to spawn position
+		debugAxisMarkers = new THREE.Object3D();
+
+		var geo = new THREE.SphereGeometry(0.01, 64, 32);
+		var mat = new THREE.MeshBasicMaterial({color: 0xFFFF00});
+		
+		var sDebugPosY = new THREE.Mesh(geo, mat);
+		sDebugPosY.position.copy(earth.position);
+		debugAxisMarkers.add(sDebugPosY);
+
+		var sDebugNegY = new THREE.Mesh(geo, mat);
+		sDebugNegY.position.y = -sDebugPosY.position.y;
+		sDebugNegY.position.x = -sDebugPosY.position.x;
+		debugAxisMarkers.add(sDebugNegY);
+		
+		var sDebugPosX = new THREE.Mesh(geo, mat);
+		sDebugPosX.position.y = -sDebugPosY.position.x;
+		sDebugPosX.position.x = sDebugPosY.position.y;
+		debugAxisMarkers.add(sDebugPosX);
+		
+		var sDebugNegX = new THREE.Mesh(geo, mat);
+		sDebugNegX.position.y = sDebugPosY.position.x;
+		sDebugNegX.position.x = -sDebugPosY.position.y;
+		debugAxisMarkers.add(sDebugNegX);
+		
+		physFramework.mainScene.add(debugAxisMarkers);
+	
+	}
+	
+	return debugAxisMarkers;
+}

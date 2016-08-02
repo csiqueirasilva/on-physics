@@ -75,6 +75,8 @@ function PhysElement () {
 		// dp=number of decimal places
 		var pi=Math.PI, K=pi/180.0;
 
+		m *= (180 / Math.PI); // to degree
+		
 		var maxIter=30, i=0;
 
 		var delta=Math.pow(10,-dp);
@@ -100,7 +102,7 @@ function PhysElement () {
 
 		E=E/K;
 
-		return Math.round(E*Math.pow(10,dp))/Math.pow(10,dp);
+		return Math.round(E*Math.pow(10,dp))/Math.pow(10,dp) * (Math.PI / 180);
 	}
 	
 	function R1 (angle) {

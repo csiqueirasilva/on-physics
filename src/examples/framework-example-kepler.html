@@ -51,7 +51,7 @@
 			<div id="info-distancia"></div>
 			<div id="info-tempo"></div>
 			
-			<div id="pausar-tempo">Stop time</div>
+			<div id="pausar-tempo">Restart time</div>
 		</div>
 	
 		<script>
@@ -69,46 +69,19 @@
 			var speed = 200;
 			
 			// EARTH
-			var earth = physFramework.addObjectFromKepler(
+			var earth = physFramework.addObjectFromKepler2(
 				0.000003003,
 				0.01,
 				0x0077FF,
-				1.00000011,
-				0.01671022,
-				0.00005,
-				102.94719 + 11.26064,
-				-11.26064,
-				100.46435 - 102.94719
+				1.00000261,
+				0.01671123,
+				-0.00001531,
+				100.46457166,
+				102.93768193,
+				0
 			);
 			
-			earth.physElement.exportPosition(earth.position);
-			
-			// reference axis to spawn position
-			var debugAxisMarkers = new THREE.Object3D();
-		
-			var geo = new THREE.SphereGeometry(0.01, 64, 32);
-			var mat = new THREE.MeshBasicMaterial({color: 0xFFFF00});
-			
-			var sDebugPosY = new THREE.Mesh(geo, mat);
-			sDebugPosY.position.copy(earth.position);
-			debugAxisMarkers.add(sDebugPosY);
-
-			var sDebugNegY = new THREE.Mesh(geo, mat);
-			sDebugNegY.position.y = -sDebugPosY.position.y;
-			sDebugNegY.position.x = -sDebugPosY.position.x;
-			debugAxisMarkers.add(sDebugNegY);
-			
-			var sDebugPosX = new THREE.Mesh(geo, mat);
-			sDebugPosX.position.y = -sDebugPosY.position.x;
-			sDebugPosX.position.x = sDebugPosY.position.y;
-			debugAxisMarkers.add(sDebugPosX);
-			
-			var sDebugNegX = new THREE.Mesh(geo, mat);
-			sDebugNegX.position.y = sDebugPosY.position.x;
-			sDebugNegX.position.x = -sDebugPosY.position.y;
-			debugAxisMarkers.add(sDebugNegX);
-			
-			physFramework.mainScene.add(debugAxisMarkers);
+			physFramework.createReferenceAxis(earth);
 			
 			window.setInterval(function() {
 				
