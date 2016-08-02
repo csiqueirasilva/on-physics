@@ -30,41 +30,41 @@
 			
 			ON_DAED["3D"].create(function (scene, camera) {
 			
-					var r = 5;
-					var speed = 18;
+					var r = 1;
+					var speed = 0.2;
 			
 					scene.add(MathHelper.buildAxes(10000));
 					
-					camera.position.set(0, 0, -50);
+					camera.position.set(0, 0, -10);
 					
 					var sphereA = new THREE.Mesh(
-						new THREE.SphereGeometry(1, 64, 32),
+						new THREE.SphereGeometry(0.1, 64, 32),
 						new THREE.MeshBasicMaterial({color: 0xFF0000})
 					);
 					
 					sphereA.physElement = new PhysElement();
-					sphereA.physElement._mass = 75;
-					sphereA.physElement._radius = 1;
+					sphereA.physElement._mass = 500;
+					sphereA.physElement._radius = 0.1;
 					sphereA.physElement._position.x = sphereA.position.x = -r;
 					sphereA.physElement._speed.y = speed;
 					
 					scene.add(sphereA);
 					
 					var sphereB = new THREE.Mesh(
-						new THREE.SphereGeometry(1, 64, 32),
+						new THREE.SphereGeometry(0.1, 64, 32),
 						new THREE.MeshBasicMaterial({color: 0xFFFFFF})
 					);
 
 					sphereB.physElement = new PhysElement();
 					sphereB.physElement._mass = 1;
-					sphereB.physElement._radius = 1;
+					sphereB.physElement._radius = 0.1;
 					sphereB.physElement._position.x = sphereA.position.x = r;
 					sphereB.physElement._position.y = sphereA.position.y = r * 2;
 					sphereB.physElement._speed.y = -0;
 					
 					scene.add(sphereB);
 					
-					var timeInterval = 1 / 1000;
+					var timeInterval = 0.05;
 					
 					window.setInterval(function() {
 					
@@ -79,7 +79,7 @@
 
 						controls.target.y = camera.position.y = sphereA.position.y;
 						
-					}, timeInterval * 1000);
+					}, 1);
 					
 				}, function (cameraControl, renderer, scene, camera, stats, clock) {
 					cameraControl.update();
