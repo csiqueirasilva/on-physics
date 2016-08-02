@@ -34,11 +34,11 @@
 				padding: 5px;
 			}
 			
-			#pausar-tempo:hover {
+			#pausar-tempo:hover, #speed-icr:hover {
 				cursor: pointer;
 			}
 			
-			#pausar-tempo {
+			#pausar-tempo, #speed-icr {
 				font-weight: bold;
 				font-color: #0000FF;
 			}
@@ -52,6 +52,7 @@
 			<div id="info-tempo"></div>
 			
 			<div id="pausar-tempo">Restart time</div>
+			<div id="speed-icr">0.05</div>
 		</div>
 	
 		<script>
@@ -62,15 +63,14 @@
 				{x: 0, y: 0, z: -4}
 			);
 
-			physFramework.addDebugAxisMarkers(1);
-			
 			var radius = 2.5;
 			var r = 9;
 			var speed = 200;
+			var EARTH_MASS = 0.000003003;
 			
 			// EARTH
 			var earth = physFramework.addObjectFromKepler2(
-				0.000003003,
+				EARTH_MASS,
 				0.01,
 				0x0077FF,
 				1.00000261,
@@ -81,7 +81,93 @@
 				0
 			);
 			
-			physFramework.createReferenceAxis(earth);
+			// VENUS
+			var venus = physFramework.addObjectFromKepler2(
+				EARTH_MASS * 0.815,
+				0.01,
+				0xFFa500,
+				0.72333566,
+				0.00677672,
+				3.39467605,
+				181.97909950,
+				131.60246718,
+				76.67984255
+			);
+			
+			// MERCURY
+			var mercury = physFramework.addObjectFromKepler2(
+				EARTH_MASS * 0.055,
+				0.005,
+				0xd3d3d3,
+				0.38709927,
+				0.20563593,
+				7.00497902,
+				252.25032350,
+				77.45779628,
+				48.33076593
+			);
+			
+			// MARS
+			var mars = physFramework.addObjectFromKepler2(
+				EARTH_MASS * 0.107,
+				0.0075,
+				0xFF0000,
+				1.52371034,
+				0.09339410,
+				1.84969142,
+				-4.55343205,
+				-23.94362959,
+				49.55953891
+			);
+			
+			// JUPITER
+			var jupiter = physFramework.addObjectFromKepler2(
+				EARTH_MASS * 317.8,
+				0.5,
+				0xFFA500,
+				5.20288700,
+				0.04838624,
+				1.30439695,
+				34.39644051,
+				14.72847983,
+				100.47390909
+			);
+			
+			var saturn = physFramework.addObjectFromKepler2(
+				EARTH_MASS * 95.16,
+				0.275,
+				0xC5FF77,
+				9.53667594,
+				0.05386179,
+				2.48599187,
+				49.95424423,
+				92.59887831,
+				113.66242448
+			);
+
+			var uranus = physFramework.addObjectFromKepler2(
+				EARTH_MASS * 14.54,
+				0.35,
+				0xCCCCFF,
+				19.18916464,
+				0.04725744,
+				0.77263783,
+				313.23810451,
+				170.95427630,
+				74.01692503
+			);
+			
+			var neptune = physFramework.addObjectFromKepler2(
+				EARTH_MASS * 17.15,
+				0.35,
+				0x0077FF,
+				30.06992276,
+				0.00859048,
+				1.77004347,
+				-55.12002969,
+				44.96476227,
+				131.78422574
+			);
 			
 			window.setInterval(function() {
 				
@@ -98,14 +184,22 @@
 					physFramework.timeInterval = 0;
 					this.innerHTML = "Restart time";
 				} else {
-					physFramework.timeInterval = 0.05;
+					physFramework.timeInterval = parseFloat(document.getElementById('speed-icr').innerHTML);
 					this.innerHTML = "Stop time";
+				}
+			}
+			
+			document.getElementById('speed-icr').onclick = function(ev) {
+				if(this.innerHTML === "0.05") {
+					this.innerHTML = "1";
+				} else {
+					this.innerHTML = "0.05";
 				}
 			}
 			
 			// SUN
 			physFramework.addObject(
-				0.05,
+				0.1,
 				1,
 				{x: 0, y: 0, z: 0},
 				{x: 0, y: 0, z: 0},
