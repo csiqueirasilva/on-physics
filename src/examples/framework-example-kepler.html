@@ -29,8 +29,8 @@
 				position: absolute;
 				left: 1%;
 				bottom: 1%;
-				width: 200px;
-				height: 220px;
+				width: 300px;
+				height: 270px;
 				background: #ffffff;
 				padding: 5px;
 			}
@@ -198,10 +198,36 @@
 			
 			window.onload = function () {
 			
+				var minDistance = Infinity;
+				var maxDistance = -Infinity;
+				var lastDist = 0;
+				var lastLastDist = 0;
+				
+				function formatNumber(n) {
+					return n.toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+				}
+				
 				window.setInterval(function() {
 					
+					var dist = (earth.position.clone().sub(sun.position).length() * 149597870);
+					
+					if(lastLastDist <= lastDist && lastDist >= dist) {
+						maxDistance = lastDist;
+					} else if (lastLastDist >= lastDist && lastDist <= dist) {
+						minDistance = lastDist;
+					}
+					
+					lastLastDist = lastDist;
+					lastDist = dist;
+					
+					var aphelion = physFramework._accTime < 365.25 ? "TBD AFTER 1 YR" : formatNumber(maxDistance);
+					var perihelion = physFramework._accTime < 365.25 ? "TBD AFTER 1 YR" : formatNumber(minDistance);
+					
 					var e = document.getElementById('info-distancia');
-					e.innerHTML = "<b>earth data</b><br />d(sun) = " + (earth.position.clone().sub(sun.position).length() * 149597870).toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " km";
+					e.innerHTML = "<b>earth data</b><br />d(sun) = " + formatNumber(dist) + " km"
+					+ "<br /><b>current orbit</b>" +
+					"<br />aphelion = " + aphelion + 
+					"<br />perihelion = " + perihelion;
 					
 					e = document.getElementById('posicao-sol');
 					e.innerHTML = "<b>sun position</b><br /> x: " +
