@@ -196,7 +196,7 @@ PhysFramework.prototype.addObjectFromKepler = function addObjectFromKepler (mass
 
 PhysFramework.prototype.addTracingLine = function addTracingLine (obj, nVerts) {
 	if(obj instanceof THREE.Sprite) {
-		var color = obj.material.color.getHex() * 1.25;
+		var color = obj.material.color.getHex() * 0.25;
 		var trace = new PhysTrace(obj, color, nVerts);
 		this.mainScene.add(trace.trace);
 	}

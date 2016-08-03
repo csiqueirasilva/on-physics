@@ -195,6 +195,21 @@
 				{x: 0, y: 0, z: 0},
 				0xFFFF00
 			);
+	
+			// APOPHIS
+			var apophis = physFramework.addObjectFromKepler(
+				EARTH_MASS * 4.519E-15,
+				0.01,
+				0xFFFFFF,
+				.9222788903126814,
+				.1910795219761208,
+				3.331290217797427,
+				126.3936405969297,
+				204.4571896287176,
+				215.5399783483177
+			);
+			
+			physFramework.addTracingLine(apophis, 350);
 			
 			window.onload = function () {
 			
