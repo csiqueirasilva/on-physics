@@ -170,6 +170,8 @@ PhysFramework.prototype.addObject = function addObject (radius, mass, position, 
 	
 	this.particles.push(particle);
 	this.mainScene.add(particle);
+	
+	return particle;
 };
 
 PhysFramework.prototype.addObjectFromKepler = function addObjectFromKepler (mass, radius, color, a, e, I, w, Omega, M) {

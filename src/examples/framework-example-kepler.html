@@ -30,7 +30,7 @@
 				left: 1%;
 				bottom: 1%;
 				width: 200px;
-				height: 200px;
+				height: 220px;
 				background: #ffffff;
 				padding: 5px;
 			}
@@ -49,11 +49,12 @@
 	<body>
 	
 		<div id="info-box">
-			<div id="info-distancia"></div>
-			<div id="info-tempo"></div>
-			
 			<div id="pausar-tempo">Restart time</div>
 			<div id="speed-icr">0.05</div>
+		
+			<div id="info-distancia"></div>
+			<div id="info-tempo"></div>
+			<div id="posicao-sol"></div>
 		</div>
 	
 		<script>
@@ -186,36 +187,8 @@
 			
 			physFramework.addTracingLine(neptune, 800);
 
-			window.setInterval(function() {
-				
-				var e = document.getElementById('info-distancia');
-				e.innerHTML = "d = " + (earth.position.length() * 149597870).toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " km";
-				
-				e = document.getElementById('info-tempo');
-				e.innerHTML = "t = " + physFramework._accTime.toFixed(2) + " dias / " + (physFramework._accTime / 365.25).toFixed(2) + " anos";
-				
-			}, 20);
-			
-			document.getElementById('pausar-tempo').onclick = function(ev) {
-				if(this.innerHTML === "Stop time") {
-					physFramework.timeInterval = 0;
-					this.innerHTML = "Restart time";
-				} else {
-					physFramework.timeInterval = parseFloat(document.getElementById('speed-icr').innerHTML);
-					this.innerHTML = "Stop time";
-				}
-			}
-			
-			document.getElementById('speed-icr').onclick = function(ev) {
-				if(this.innerHTML === "0.05") {
-					this.innerHTML = "1";
-				} else {
-					this.innerHTML = "0.05";
-				}
-			}
-			
 			// SUN
-			physFramework.addObject(
+			var sun = physFramework.addObject(
 				0.1,
 				1,
 				{x: 0, y: 0, z: 0},
@@ -223,9 +196,47 @@
 				0xFFFF00
 			);
 			
-			window.setTimeout(function() {
-				StartTracingLines();
-			}, 500);
+			window.onload = function () {
+			
+				window.setInterval(function() {
+					
+					var e = document.getElementById('info-distancia');
+					e.innerHTML = "<b>earth data</b><br />d(sun) = " + (earth.position.clone().sub(sun.position).length() * 149597870).toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " km";
+					
+					e = document.getElementById('posicao-sol');
+					e.innerHTML = "<b>sun position</b><br /> x: " +
+						sun.physElement._position.x.toFixed(15) + "<br />y: " + 
+						sun.physElement._position.y.toFixed(15) + "<br />z: " + 
+						sun.physElement._position.z.toFixed(15);
+						
+					e = document.getElementById('info-tempo');
+					e.innerHTML = "t = " + physFramework._accTime.toFixed(2) + " dias / " + (physFramework._accTime / 365.25).toFixed(2) + " anos";
+					
+				}, 20);
+				
+				document.getElementById('pausar-tempo').onclick = function(ev) {
+					if(this.innerHTML === "Stop time") {
+						physFramework.timeInterval = 0;
+						this.innerHTML = "Restart time";
+					} else {
+						physFramework.timeInterval = parseFloat(document.getElementById('speed-icr').innerHTML);
+						this.innerHTML = "Stop time";
+					}
+				}
+				
+				document.getElementById('speed-icr').onclick = function(ev) {
+					if(this.innerHTML === "0.05") {
+						this.innerHTML = "1";
+					} else {
+						this.innerHTML = "0.05";
+					}
+				}
+				
+				window.setTimeout(function() {
+					StartTracingLines();
+				}, 500);
+			
+			};
 			
 		</script>
 	</body>
