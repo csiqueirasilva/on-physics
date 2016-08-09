@@ -120,8 +120,6 @@
 					
 					var stringDate = ON_DAED.ASTRO.getDateFromJulian((solarSystemFramework._epochDate + physFramework._accTime)).toISOString();
 					
-					console.log(bodiesDist, closestDist);
-					
 					if(bodiesDist <= closestDist) {
 						closestDist = bodiesDist;
 						closestDate = stringDate;
@@ -165,17 +163,18 @@
 				}
 				
 				var smallerTimeStep = document.getElementById('speed-icr').innerHTML;
+				var longerTimeStep = "0.05";
 				
 				document.getElementById('speed-icr').onclick = function(ev) {
 					if(this.innerHTML === smallerTimeStep) {
-						this.innerHTML = "1";
+						this.innerHTML = longerTimeStep;
 					} else {
 						this.innerHTML = smallerTimeStep;
 					}
 				}
 				
 				window.setTimeout(function() {
-					StartTracingLines(1000);
+					StartTracingLines(100);
 				}, 500);
 			
 			};
