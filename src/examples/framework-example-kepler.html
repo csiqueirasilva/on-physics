@@ -5,6 +5,7 @@
 		<script src="../core/PhysTrace.js"></script>
 		<script src="../core/PhysElement.js"></script>
 		<script src="../core/PhysFramework.js"></script>
+		<script src="../core/PhysSolarSystem.js"></script>
 		
 		<script src="../js/jquery.min.js"></script>
         <script src="../js/bootstrap.min.js"></script>
@@ -30,7 +31,7 @@
 				left: 1%;
 				bottom: 1%;
 				width: 300px;
-				height: 270px;
+				height: 380px;
 				background: #ffffff;
 				padding: 5px;
 			}
@@ -59,145 +60,32 @@
 	
 		<script>
             
-			var physFramework = new PhysFramework(
-				'../imgs/particleTexture.png',
-				1,
-				{x: 0, y: 0, z: -4}
-			);
-
-			var radius = 2.5;
-			var r = 9;
-			var speed = 200;
-			var EARTH_MASS = 0.000003003;
+			/* 			
 			
-			// EARTH
-			var earth = physFramework.addObjectFromKepler2(
-				EARTH_MASS,
-				0.01,
-				0x0077FF,
-				1.00000261,
-				0.01671123,
-				-0.00001531,
-				100.46457166,
-				102.93768193,
-				0
-			);
+				// APOPHIS
+				var apophis = physFramework.addObjectFromKepler(
+					EARTH_MASS * 4.519E-15,
+					0.01,
+					0xFFFFFF,
+					.9222788903126814,
+					.1910795219761208,
+					3.331290217797427,
+					126.3936405969297,
+					204.4571896287176,
+					215.5399783483177
+				);
+				
+				physFramework.addTracingLine(apophis, 350);
 			
-			physFramework.addTracingLine(earth, 350);
+			*/
 			
-			// VENUS
-			var venus = physFramework.addObjectFromKepler2(
-				EARTH_MASS * 0.815,
-				0.01,
-				0xFFa500,
-				0.72333566,
-				0.00677672,
-				3.39467605,
-				181.97909950,
-				131.60246718,
-				76.67984255
-			);
+			var solarSystemFramework = new PhysSolarSystem('../imgs/particleTexture.png');
+			var physFramework = solarSystemFramework.physFramework;
+			var EARTH_MASS = solarSystemFramework.getEarthMass();
 			
-			physFramework.addTracingLine(venus, 200);
-			
-			// MERCURY
-			var mercury = physFramework.addObjectFromKepler2(
-				EARTH_MASS * 0.055,
-				0.005,
-				0xd3d3d3,
-				0.38709927,
-				0.20563593,
-				7.00497902,
-				252.25032350,
-				77.45779628,
-				48.33076593
-			);
-			
-			physFramework.addTracingLine(mercury, 120);
-			
-			// MARS
-			var mars = physFramework.addObjectFromKepler2(
-				EARTH_MASS * 0.107,
-				0.0075,
-				0xFF0000,
-				1.52371034,
-				0.09339410,
-				1.84969142,
-				-4.55343205,
-				-23.94362959,
-				49.55953891
-			);
-			
-			physFramework.addTracingLine(mars, 600);
-			
-			// JUPITER
-			var jupiter = physFramework.addObjectFromKepler2(
-				EARTH_MASS * 317.8,
-				0.5,
-				0xFFA500,
-				5.20288700,
-				0.04838624,
-				1.30439695,
-				34.39644051,
-				14.72847983,
-				100.47390909
-			);
-			
-			physFramework.addTracingLine(jupiter, 500);
-			
-			var saturn = physFramework.addObjectFromKepler2(
-				EARTH_MASS * 95.16,
-				0.275,
-				0xC5FF77,
-				9.53667594,
-				0.05386179,
-				2.48599187,
-				49.95424423,
-				92.59887831,
-				113.66242448
-			);
-
-			physFramework.addTracingLine(saturn, 600);
-
-			var uranus = physFramework.addObjectFromKepler2(
-				EARTH_MASS * 14.54,
-				0.35,
-				0xCCCCFF,
-				19.18916464,
-				0.04725744,
-				0.77263783,
-				313.23810451,
-				170.95427630,
-				74.01692503
-			);
-			
-			physFramework.addTracingLine(uranus, 700);
-
-			var neptune = physFramework.addObjectFromKepler2(
-				EARTH_MASS * 17.15,
-				0.35,
-				0x0077FF,
-				30.06992276,
-				0.00859048,
-				1.77004347,
-				-55.12002969,
-				44.96476227,
-				131.78422574
-			);
-			
-			physFramework.addTracingLine(neptune, 800);
-
-			// SUN
-			var sun = physFramework.addObject(
-				0.1,
-				1,
-				{x: 0, y: 0, z: 0},
-				{x: 0, y: 0, z: 0},
-				0xFFFF00
-			);
-	
 			// APOPHIS
-			var apophis = physFramework.addObjectFromKepler(
+			solarSystemFramework.viewObject(
+				2454441.5,
 				EARTH_MASS * 4.519E-15,
 				0.01,
 				0xFFFFFF,
@@ -209,22 +97,35 @@
 				215.5399783483177
 			);
 			
-			physFramework.addTracingLine(apophis, 350);
-			
 			window.onload = function () {
 			
 				var minDistance = Infinity;
 				var maxDistance = -Infinity;
 				var lastDist = 0;
 				var lastLastDist = 0;
-				
+				var closestDist = Infinity;
+				var closestDate = null;
+
 				function formatNumber(n) {
 					return n.toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 				}
 				
 				window.setInterval(function() {
 					
+					var earth = solarSystemFramework.getEarth();
+					var sun = solarSystemFramework.getSun();
+					
 					var dist = (earth.position.clone().sub(sun.position).length() * 149597870);
+					var bodiesDist = solarSystemFramework.getEarthObjectDistance();
+					
+					var stringDate = ON_DAED.ASTRO.getDateFromJulian((solarSystemFramework._epochDate + physFramework._accTime)).toISOString();
+					
+					console.log(bodiesDist, closestDist);
+					
+					if(bodiesDist <= closestDist) {
+						closestDist = bodiesDist;
+						closestDate = stringDate;
+					}
 					
 					if(lastLastDist <= lastDist && lastDist >= dist) {
 						maxDistance = lastDist;
@@ -240,9 +141,7 @@
 					
 					var e = document.getElementById('info-distancia');
 					e.innerHTML = "<b>earth data</b><br />d(sun) = " + formatNumber(dist) + " km"
-					+ "<br /><b>current orbit</b>" +
-					"<br />aphelion = " + aphelion + 
-					"<br />perihelion = " + perihelion;
+					+ "<br />d(apophis) = " + formatNumber(bodiesDist) + " km<br />Closest distance: " + formatNumber(closestDist) + " km<br/>on " + closestDate + "<br /><b>current orbit</b>" + "<br />aphelion = " + aphelion + "<br />perihelion = " + perihelion;
 					
 					e = document.getElementById('posicao-sol');
 					e.innerHTML = "<b>sun position</b><br /> x: " +
@@ -251,7 +150,7 @@
 						sun.physElement._position.z.toFixed(15);
 						
 					e = document.getElementById('info-tempo');
-					e.innerHTML = "t = " + physFramework._accTime.toFixed(2) + " dias / " + (physFramework._accTime / 365.25).toFixed(2) + " anos";
+					e.innerHTML = "t = " + physFramework._accTime.toFixed(2) + " dias / " + (physFramework._accTime / 365.25).toFixed(2) + " anos" + "<br />" + stringDate;
 					
 				}, 20);
 				
