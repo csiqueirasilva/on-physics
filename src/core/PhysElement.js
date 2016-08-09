@@ -8,7 +8,7 @@ function PhysElement () {
 }
 
 (function () {
-	var ACCEL_PRECISION = 1E8;
+	var ACCEL_PRECISION = 1E7;
 	var k = 0.01720209895; // gaussian gravitational constant
 	var GRAVITIONAL_CONSTANT = k * k /* AU^3 * day^-2 * sunMass^-1 */;
 	
