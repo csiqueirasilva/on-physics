@@ -47,11 +47,11 @@ function PhysSolarSystem (imgPath) {
 	
 	PhysSolarSystem.prototype.viewObject = function (epochDate, mass, radius, color, a, e, I, peri, node, M) {
 		if(!this._solarSystemInit && this.checkInputDate(epochDate)) {
-			var body = physFramework.addObjectFromKepler(
+			var body = this.physFramework.addObjectFromKepler(
 				mass, radius, color, a, e, I, peri, node, M
 			);
 		
-			physFramework.addTracingLine(body, 350);
+			this.physFramework.addTracingLine(body, 350);
 			
 			this.initSolarSystem(epochDate);
 			
@@ -59,7 +59,7 @@ function PhysSolarSystem (imgPath) {
 		}
 	};
 	
-	PhysSolarSystem.prototype.checkInputDate = function (jd) {
+	PhysSolarSystem.prototype.checkInputDate = function checkInputDate (jd) {
 		// 2451545.0 == Jan 1 2000 12:00
 		// 2378497.0 == Jan 1 1800 12:00
 		// 2469807.0 == Jan 1 2050 12:00
@@ -71,7 +71,17 @@ function PhysSolarSystem (imgPath) {
 		var ret = jd >= bottomLimit && jd <= topLimit;
 		
 		return ret;
-	}
+	};
+	
+	PhysSolarSystem.prototype.hideOtherPlanets = function hideOtherPlanets () {
+		var physFramework = this.physFramework;
+		
+		for(var i = 1; i < this._objects.length - 1; i++) {
+			if(i !== 3) {
+				physFramework.hide(this._objects[i]);
+			}
+		}
+	};
 	
 	PhysSolarSystem.prototype.initSolarSystem = function(jd) {
 
@@ -84,6 +94,8 @@ function PhysSolarSystem (imgPath) {
 			this._epochDate = jd;
 			
 			var t = (jd - 2451545.0) / 36525;
+		
+			var physFramework = this.physFramework;
 		
 			// EARTH
 			var earth = physFramework.addObjectFromKepler2(

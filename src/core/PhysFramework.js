@@ -194,6 +194,24 @@ PhysFramework.prototype.addObjectFromKepler = function addObjectFromKepler (mass
 	return particle;
 };
 
+PhysFramework.prototype.hide = function hide (obj) {
+	if(obj instanceof THREE.Sprite) {
+		obj.visible = false;
+		if(obj._trace) {
+			obj._trace.trace.visible = false;
+		}
+	}
+};
+
+PhysFramework.prototype.show = function show (obj) {
+	if(obj instanceof THREE.Sprite) {
+		obj.visible = true;
+		if(obj._trace) {
+			obj._trace.trace.visible = true;
+		}
+	}
+};
+
 PhysFramework.prototype.addTracingLine = function addTracingLine (obj, nVerts) {
 	if(obj instanceof THREE.Sprite) {
 		var color = obj.material.color.getHex() * 0.25;

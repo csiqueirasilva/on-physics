@@ -11,6 +11,7 @@ var PhysTrace = (function() {
 		});
 
 		this.obj = obj;
+		obj._trace = this;
 		this.traceGeo = new THREE.Geometry();
 		this.traceGeo.dynamic = true;
 		
