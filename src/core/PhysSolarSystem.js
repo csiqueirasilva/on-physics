@@ -76,7 +76,7 @@ function PhysSolarSystem (imgPath) {
 	PhysSolarSystem.prototype.hideOtherPlanets = function hideOtherPlanets () {
 		var physFramework = this.physFramework;
 		
-		for(var i = 1; i < this._objects.length - 1; i++) {
+		for(var i = 1; i < 9; i++) {
 			if(i !== 3) {
 				physFramework.hide(this._objects[i]);
 			}
