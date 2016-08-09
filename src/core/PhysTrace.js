@@ -47,13 +47,15 @@ var PhysTrace = (function() {
 		traceGeo.verticesNeedUpdate = true;
 	};
 	
-	window.StartTracingLines = function StartTracingLines () {
+	window.StartTracingLines = function StartTracingLines (t) {
+	
+		var interval = t || 100;
 	
 		window.setInterval(function() {
 			for(var i = 0; i < TRACES.length; i++) {
 				TRACES[i].updateTrace();
 			}
-		}, 100);
+		}, interval);
 	
 	};
 	

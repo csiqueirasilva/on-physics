@@ -51,7 +51,7 @@
 	
 		<div id="info-box">
 			<div id="pausar-tempo">Restart time</div>
-			<div id="speed-icr">0.05</div>
+			<div id="speed-icr">0.005</div>
 		
 			<div id="info-distancia"></div>
 			<div id="info-tempo"></div>
@@ -164,16 +164,18 @@
 					}
 				}
 				
+				var smallerTimeStep = document.getElementById('speed-icr').innerHTML;
+				
 				document.getElementById('speed-icr').onclick = function(ev) {
-					if(this.innerHTML === "0.05") {
+					if(this.innerHTML === smallerTimeStep) {
 						this.innerHTML = "1";
 					} else {
-						this.innerHTML = "0.05";
+						this.innerHTML = smallerTimeStep;
 					}
 				}
 				
 				window.setTimeout(function() {
-					StartTracingLines();
+					StartTracingLines(1000);
 				}, 500);
 			
 			};

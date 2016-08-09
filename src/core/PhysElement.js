@@ -220,7 +220,7 @@ function PhysElement () {
 			e - Eccentricity
 			I - Inclination
 			Omega - Longitude of Nodes
-			w - Argument of Pericenter
+			w - Argument of Pericenter/periapsis
 			M - Mean Anomaly
 			n - Mean Motion
 			
