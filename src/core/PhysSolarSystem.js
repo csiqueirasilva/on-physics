@@ -15,6 +15,11 @@ function PhysSolarSystem (imgPath) {
 (function () {
 	
 	var EARTH_MASS = 0.000003003; // in solar mass
+	var UA = 149597870.7; //km
+	
+	PhysSolarSystem.prototype.getUA = function () {
+		return UA;
+	};
 	
 	PhysSolarSystem.prototype.getEarthMass = function () {
 		return EARTH_MASS;
@@ -37,7 +42,7 @@ function PhysSolarSystem (imgPath) {
 			var earth = this.getEarth();
 			var body = this._objects[this._objects.length - 1];
 			
-			var dist = Math.abs(earth.position.clone().sub(body.position).length() * 149597870);
+			var dist = Math.abs(earth.position.clone().sub(body.position).length() * UA);
 
 			ret = dist;
 		}
@@ -46,17 +51,27 @@ function PhysSolarSystem (imgPath) {
 	};
 	
 	PhysSolarSystem.prototype.viewObject = function (epochDate, mass, radius, color, a, e, I, peri, node, M) {
+		var body = null;
 		if(!this._solarSystemInit && this.checkInputDate(epochDate)) {
-			var body = this.physFramework.addObjectFromKepler(
+			body = this.physFramework.addObjectFromKepler(
 				mass, radius, color, a, e, I, peri, node, M
 			);
-		
+
+			body.physElement._position.x = -body.physElement._position.x;
+			body.physElement._position.y = -body.physElement._position.y;
+			body.physElement._position.z = -body.physElement._position.z;
+			
+			body.physElement._speed.x = -body.physElement._speed.x;
+			body.physElement._speed.y = -body.physElement._speed.y;
+			body.physElement._speed.z = -body.physElement._speed.z;
+					
 			this.physFramework.addTracingLine(body, 350);
 			
 			this.initSolarSystem(epochDate);
 			
 			this._objects.push(body);
 		}
+		return body;
 	};
 	
 	PhysSolarSystem.prototype.checkInputDate = function checkInputDate (jd) {
@@ -97,16 +112,16 @@ function PhysSolarSystem (imgPath) {
 		
 			var physFramework = this.physFramework;
 		
-			// EARTH
+			// EARTH BARY
 			var earth = physFramework.addObjectFromKepler2(
 				EARTH_MASS,
-				0.01,
+				0.001,
 				0x0077FF,
-				1.00000261 + 0.00000562 * t,
-				0.01671123 + -0.00004392 * t,
-				-0.00001531 + -0.01294668 * t,
-				100.46457166 + 35999.37244981 * t,
-				102.93768193 + 0.32327364 * t ,
+				1.00000261 + (0.00000562 * t),
+				0.01671123 + (-0.00004392 * t),
+				-0.00001531 + (-0.01294668 * t),
+				100.46457166 + (35999.37244981 * t),
+				102.93768193 + (0.32327364 * t),
 				0 + 0 * t
 			);
 			
@@ -222,6 +237,8 @@ function PhysSolarSystem (imgPath) {
 				{x: 0, y: 0, z: 0},
 				0xFFFF00
 			);
+			
+			//sun.physElement._collided = true;
 			
 			this._objects.push(sun, mercury, venus, earth, mars, jupiter, saturn, uranus, neptune);
 			this._solarSystemInit = true;

@@ -222,7 +222,7 @@ PhysFramework.prototype.addTracingLine = function addTracingLine (obj, nVerts) {
 
 PhysFramework.prototype.addObjectFromKepler2 = function addObjectFromKepler2 (mass, radius, color, a, e, I, L, longitudeOfPerihelion, Omega) {
 
-	var w = longitudeOfPerihelion - Omega;
+	var w = (longitudeOfPerihelion - Omega);
 	var M = (L - longitudeOfPerihelion) % 360;
 	
 	if(M > 180) {

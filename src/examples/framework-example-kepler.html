@@ -60,42 +60,39 @@
 	
 		<script>
             
-			/* 			
-			
-				// APOPHIS
-				var apophis = physFramework.addObjectFromKepler(
-					EARTH_MASS * 4.519E-15,
-					0.01,
-					0xFFFFFF,
-					.9222788903126814,
-					.1910795219761208,
-					3.331290217797427,
-					126.3936405969297,
-					204.4571896287176,
-					215.5399783483177
-				);
-				
-				physFramework.addTracingLine(apophis, 350);
-			
-			*/
-			
 			var solarSystemFramework = new PhysSolarSystem('../imgs/particleTexture.png');
 			var physFramework = solarSystemFramework.physFramework;
 			var EARTH_MASS = solarSystemFramework.getEarthMass();
 			
 			// APOPHIS
-			solarSystemFramework.viewObject(
+			var apophis = solarSystemFramework.viewObject(
 				2454441.5,
 				EARTH_MASS * 4.519E-15,
-				0.01,
+				0.001,
 				0xFFFFFF,
-				.9222788903126814,
-				.1910795219761208,
-				3.331290217797427,
-				126.3936405969297,
-				204.4571896287176,
-				215.5399783483177
+				.9222788903126814, // a
+				.1910795219761208, // e
+				3.331290217797427, // I
+				126.3936405969297, // w
+				204.4571896287176, // Omega
+				215.5399783483177 // M
 			);
+			
+			/*
+			
+			// APOPHIS
+			var apophis = solarSystemFramework.viewObject(
+				2462238.500000000,
+				EARTH_MASS * 4.519E-15,
+				0.001,
+				0xFFFFFF,
+				9.216684964232863E-01, // a
+				1.934295326431677E-01, // e
+				3.380783438259181E+00, // I
+				1.267246473931361E+02, // w
+				2.038000239348464E+02, // Omega
+				2.505339792779035E+02 // M
+			); */
 			
 			solarSystemFramework.hideOtherPlanets();
 			
@@ -117,7 +114,7 @@
 					var earth = solarSystemFramework.getEarth();
 					var sun = solarSystemFramework.getSun();
 					
-					var dist = (earth.position.clone().sub(sun.position).length() * 149597870);
+					var dist = (earth.position.clone().sub(sun.position).length() * solarSystemFramework.getUA());
 					var bodiesDist = solarSystemFramework.getEarthObjectDistance();
 					
 					var stringDate = ON_DAED.ASTRO.getDateFromJulian((solarSystemFramework._epochDate + physFramework._accTime)).toISOString();

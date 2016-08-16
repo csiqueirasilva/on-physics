@@ -8,7 +8,7 @@ function PhysElement () {
 }
 
 (function () {
-	var ACCEL_PRECISION = 1E7;
+	var ACCEL_PRECISION = 1E6;
 	var k = 0.01720209895; // gaussian gravitational constant
 	var GRAVITIONAL_CONSTANT = k * k /* AU^3 * day^-2 * sunMass^-1 */;
 	
@@ -147,6 +147,15 @@ function PhysElement () {
 		return ret;
 	}
 	
+	// http://ssd.jpl.nasa.gov/txt/aprx_pos_planets.pdf
+	function keplerToCartesianMultMat(I, w, Omega, x, y) {
+		return [
+			(Math.cos(w) * Math.cos(Omega) - Math.sin(w) * Math.sin(Omega) * Math.cos(I)) * x + (-Math.sin(w) * Math.cos(Omega) - Math.cos(w) * Math.sin(Omega) * Math.cos(I)) * y,
+			(Math.cos(w) * Math.sin(Omega) + Math.sin(w) * Math.cos(Omega) * Math.cos(I)) * x + (-Math.sin(w) * Math.sin(Omega) + Math.cos(w) * Math.cos(Omega) * Math.cos(I)) * y,
+			(Math.sin(w) * Math.sin(I)) * x + (Math.cos(w) * Math.sin(I)) * y
+		];
+	}
+	
 	function keplerToCartesian(a, e, I, w, Omega, M) {
 		/* 
 			a - SemiMajor Axis
@@ -164,8 +173,8 @@ function PhysElement () {
 		*/ 
 	
 		// Nico Sneeuw Pg 23 (2.11) / formula sheet (1)
-		var E = EccAnom(e, M, 15);
-		
+		var E = EccAnom(e, M, 6);
+	
 		// Nico Sneeuw Pg 23 (2.12) / formula sheet (2)
 		var q = [
 			a * (Math.cos(E) - e),
@@ -184,13 +193,8 @@ function PhysElement () {
 			0
 		];
 		
-		// Nico Sneeuw Pg 24 (2.15 & 2.16) / formula sheet (5 & 6)
-		var multMat = multMat3x3(multMat3x3(R3(-Omega), R1(-I)), R3(-w));
-		var r = multMatVet(multMat, q);
-		var rDash = multMatVet(multMat, qDash);
-		var rotFix = R3(Math.PI / 2);
-		r = multMatVet(rotFix, r);
-		rDash = multMatVet(rotFix, rDash);
+		var r = keplerToCartesianMultMat(I, w, Omega, q[0], q[1]);
+		var rDash = keplerToCartesianMultMat(I, w, Omega, qDash[0], qDash[1]);
 		
 		return {
 			position: {
