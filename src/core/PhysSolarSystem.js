@@ -9,6 +9,7 @@ function PhysSolarSystem (imgPath) {
 	// control variables
 	this._objects = [];
 	this._solarSystemInit = false;
+	this._sdmInit = false;
 	this._epochDate = null;
 }
 
@@ -37,15 +38,12 @@ function PhysSolarSystem (imgPath) {
 
 		var ret = null;
 	
-		if(this._objects.length > 9) {
+		var earth = this.getEarth();
+		var body = this._objects[this._objects.length - 1];
 		
-			var earth = this.getEarth();
-			var body = this._objects[this._objects.length - 1];
-			
-			var dist = Math.abs(earth.position.clone().sub(body.position).length() * UA);
+		var dist = Math.abs(earth.position.clone().sub(body.position).length() * UA);
 
-			ret = dist;
-		}
+		ret = dist;
 		
 		return ret;
 	};
@@ -71,6 +69,7 @@ function PhysSolarSystem (imgPath) {
 			
 			this._objects.push(body);
 		}
+		
 		return body;
 	};
 	
@@ -90,8 +89,9 @@ function PhysSolarSystem (imgPath) {
 	
 	PhysSolarSystem.prototype.hideOtherPlanets = function hideOtherPlanets () {
 		var physFramework = this.physFramework;
+		var topLimit = 9;
 		
-		for(var i = 1; i < 9; i++) {
+		for(var i = 1; i < topLimit; i++) {
 			if(i !== 3) {
 				physFramework.hide(this._objects[i]);
 			}
@@ -245,4 +245,88 @@ function PhysSolarSystem (imgPath) {
 		}
 	}
 
+	PhysSolarSystem.prototype.loadStandardDynamicModel = function (data) {
+		if(!this._sdmInit) {
+			
+			var results = data.results;
+			
+			// SUN
+			var sun = physFramework.addObject(
+				0.1,
+				1,
+				{x: 0, y: 0, z: 0},
+				{x: 0, y: 0, z: 0},
+				0xFFFF00
+			);
+
+			this._objects.push(sun);
+			
+			// temp variable
+			var mass = [
+				EARTH_MASS * 0.055, // mercury
+				EARTH_MASS * 0.815, // venus
+				EARTH_MASS, // earth
+				EARTH_MASS * 0.107, // mars
+				EARTH_MASS * 317.8, // jupiter
+				EARTH_MASS * 95.16, // saturn
+				EARTH_MASS * 14.54, // uranus
+				EARTH_MASS * 17.15, // neptune
+				EARTH_MASS * 0.00015, // ceres
+				1.30E-10, // vesta
+				EARTH_MASS * 0.00015 * 0.22 // pallas
+			];
+			
+			for(var i = 0; i < 8; i++) {
+			
+				var m = mass[i],
+					a = results[i].a,
+					e = results[i].ec,
+					I = results[i].in,
+					peri = results[i].w,
+					node = results[i].om,
+					M = results[i].ma;
+				
+				var object = physFramework.addObjectFromKepler(
+						m,
+						i < 9 ? 0.01 : 0.00001,
+						i === 2 ? 0x00FF00 : 0xFFFFFF,
+						a,
+						e,
+						I,
+						peri,
+						node,
+						M
+					);
+					
+				physFramework.addTracingLine(object, 800);
+
+				this._objects.push(object);
+			}
+			
+			this._epochDate = data.jd;
+			this._sdmInit = true;
+		}
+	};
+	
+	PhysSolarSystem.prototype.loadObject = function (data) {
+		var body = null;
+		
+		if(this._epochDate === data.jd) {
+			var results = data.results[0];
+		
+			// temp constants
+			body = this.physFramework.addObjectFromKepler(
+				EARTH_MASS * 4.519E-15, 0.01, 0xFF0000, results.a, results.ec, results.in, results.w, results.om, results.ma
+			);
+
+			this.physFramework.addTracingLine(body, 350);
+			
+			this._objects.push(body);
+		}
+		
+		return body;
+
+		
+	};
+	
 })();

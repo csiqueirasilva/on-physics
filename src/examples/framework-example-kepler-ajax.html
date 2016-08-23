@@ -1,0 +1,235 @@
+<html>
+	<head>
+		<title>Framework with Kepler Parameters example</title>
+
+		<script src="../core/PhysTrace.js"></script>
+		<script src="../core/PhysElement.js"></script>
+		<script src="../core/PhysFramework.js"></script>
+		<script src="../core/PhysSolarSystem.js"></script>
+		
+		<script src="../js/jquery.min.js"></script>
+        <script src="../js/bootstrap.min.js"></script>
+
+        <script src="../js/three.min.js"></script>
+		<script src="../js/stats.min.js"></script>
+		<script src="../js/OrbitControls.js"></script>
+
+		<script src="../lib/on-daed-js/geral.js"></script>
+        <script src="../lib/on-daed-js/vsop87.min.js"></script>
+        <script src="../lib/on-daed-js/astro.js"></script>
+ 
+        <script src="../lib/on-daed-js/ThreeHelper.js"></script>
+        <script src="../lib/on-daed-js/MathHelper.js"></script>
+        <script src="../lib/on-daed-js/3D.js"></script>
+		
+        <link href="../css/bootstrap.min.css" rel="stylesheet"/>
+        <link href="../css/bootstrap-responsive.css" rel="stylesheet"/>
+
+		<style>
+			#info-box {
+				position: absolute;
+				left: 1%;
+				bottom: 1%;
+				width: 300px;
+				height: 380px;
+				background: #ffffff;
+				padding: 5px;
+			}
+			
+			#pausar-tempo:hover, #speed-icr:hover {
+				cursor: pointer;
+			}
+			
+			#pausar-tempo, #speed-icr {
+				font-weight: bold;
+				font-color: #0000FF;
+			}
+			
+			#loading-screen {
+				margin: 0;
+				position: absolute;
+				top: 0;
+				left: 0;
+				background: #000000;
+				width: 100%;
+				height: 100%;
+				z-index: 100000;
+			}
+			
+			#loading-box {
+				color: #FFFFFF;
+				text-align: center;
+				margin-top: 30vh;
+			}
+		</style>
+		
+	</head>
+	<body>
+	
+		<div id="loading-screen">
+		
+			<div id="loading-box" style="display: none;">
+				<img src="../imgs/loading.gif" />
+				<figcaption>Loading content...</figcaption>
+			</div>
+			
+		</div>
+	
+		<div id="info-box">
+			<div id="pausar-tempo">Restart time</div>
+			<div id="speed-icr">0.005</div>
+		
+			<div id="info-distancia"></div>
+			<div id="info-tempo"></div>
+			<div id="posicao-sol"></div>
+		</div>
+	
+		<script>
+            
+			var solarSystemFramework = new PhysSolarSystem('../imgs/particleTexture.png');
+			var physFramework = solarSystemFramework.physFramework;
+			var EARTH_MASS = solarSystemFramework.getEarthMass();
+			
+			var SDMData = null;
+			var objectData = null;
+			
+			/* 
+				2451544.5 - Jan 1 2000
+				2461875.5 - April 13 2028
+				2462240.5 - April 13 2029
+			*/
+			
+			var JD;
+			var objectID = 99942; // apophis
+			
+			do {
+				JD = prompt("INPUT JULIAN DATE (2444240.0 <= JD <= 2480765.0):", "2461875.5");
+			} while (JD < 2444240.0 || JD > 2480765.0);
+
+			do {
+				objectID = prompt("INPUT ELEMENT ID (eg: APOPHIS = 99942):", "99942");
+			} while (objectID < 10);
+			
+			document.getElementById('loading-box').style.display = "block";
+			
+			var getSDM = new XMLHttpRequest();
+			getSDM.onreadystatechange = function(data) {
+				if (getSDM.readyState == 4 && getSDM.status == 200) {
+					SDMData = JSON.parse(getSDM.responseText);
+					
+					var getObject = new XMLHttpRequest();
+					getObject.onreadystatechange = function(data) {
+						if (getObject.readyState == 4 && getObject.status == 200) {
+							objectData = JSON.parse(getObject.responseText);
+						}
+					};
+					
+					getObject.open("GET", "http://daed-dev.on.br/astro/horizons/elements?jd="+JD+"&id="+objectID, true);
+					getObject.send();
+				}
+			};
+			
+			getSDM.open("GET", "http://daed-dev.on.br/astro/horizons/sdm?jd="+JD, true);
+			getSDM.send();
+			
+			function inputBindings() {
+			
+				document.getElementById('pausar-tempo').onclick = function(ev) {
+					if(this.innerHTML === "Stop time") {
+						physFramework.timeInterval = 0;
+						this.innerHTML = "Restart time";
+					} else {
+						physFramework.timeInterval = parseFloat(document.getElementById('speed-icr').innerHTML);
+						this.innerHTML = "Stop time";
+					}
+				}
+				
+				var smallerTimeStep = document.getElementById('speed-icr').innerHTML;
+				var longerTimeStep = "0.05";
+				
+				document.getElementById('speed-icr').onclick = function(ev) {
+					if(this.innerHTML === smallerTimeStep) {
+						this.innerHTML = longerTimeStep;
+					} else {
+						this.innerHTML = smallerTimeStep;
+					}
+				}
+				
+				window.setTimeout(function() {
+					StartTracingLines(100);
+				}, 500);
+			
+			}
+			
+			function ready() {
+
+				var minDistance = Infinity;
+				var maxDistance = -Infinity;
+				var lastDist = 0;
+				var lastLastDist = 0;
+				var closestDist = Infinity;
+				var closestDate = null;
+
+				function formatNumber(n) {
+					return n.toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+				}
+				
+				window.setInterval(function() {
+					
+					var earth = solarSystemFramework.getEarth();
+					var sun = solarSystemFramework.getSun();
+					
+					var dist = (earth.position.clone().sub(sun.position).length() * solarSystemFramework.getUA());
+					var bodiesDist = solarSystemFramework.getEarthObjectDistance();
+					
+					var stringDate = ON_DAED.ASTRO.getDateFromJulian((solarSystemFramework._epochDate + physFramework._accTime)).toISOString();
+					
+					if(bodiesDist <= closestDist) {
+						closestDist = bodiesDist;
+						closestDate = stringDate;
+					}
+					
+					if(lastLastDist <= lastDist && lastDist >= dist) {
+						maxDistance = lastDist;
+					} else if (lastLastDist >= lastDist && lastDist <= dist) {
+						minDistance = lastDist;
+					}
+					
+					lastLastDist = lastDist;
+					lastDist = dist;
+					
+					var aphelion = physFramework._accTime < 365.25 ? "TBD AFTER 1 YR" : formatNumber(maxDistance);
+					var perihelion = physFramework._accTime < 365.25 ? "TBD AFTER 1 YR" : formatNumber(minDistance);
+					
+					var e = document.getElementById('info-distancia');
+					e.innerHTML = "<b>earth data</b><br />d(sun) = " + formatNumber(dist) + " km"
+					+ "<br />d(apophis) = " + formatNumber(bodiesDist) + " km<br />Closest distance: " + formatNumber(closestDist) + " km<br/>on " + closestDate + "<br /><b>current orbit</b>" + "<br />aphelion = " + aphelion + "<br />perihelion = " + perihelion;
+					
+					e = document.getElementById('posicao-sol');
+					e.innerHTML = "<b>sun position</b><br /> x: " +
+						sun.physElement._position.x.toFixed(15) + "<br />y: " + 
+						sun.physElement._position.y.toFixed(15) + "<br />z: " + 
+						sun.physElement._position.z.toFixed(15);
+						
+					e = document.getElementById('info-tempo');
+					e.innerHTML = "t = " + physFramework._accTime.toFixed(2) + " dias / " + (physFramework._accTime / 365.25).toFixed(2) + " anos" + "<br />" + stringDate;
+					
+				}, 20);
+			
+			}
+			
+			var loadInterval = window.setInterval(function() {
+				if(objectData !== null && SDMData !== null) {
+					window.clearInterval(loadInterval);
+					solarSystemFramework.loadStandardDynamicModel(SDMData);
+					solarSystemFramework.loadObject(objectData);
+					solarSystemFramework.hideOtherPlanets();
+					inputBindings();
+					ready();
+					document.body.removeChild(document.getElementById('loading-screen'));
+				}
+			}, 100);
+			
+		</script>
+	</body>
+</html>

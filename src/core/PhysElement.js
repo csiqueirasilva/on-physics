@@ -10,7 +10,8 @@ function PhysElement () {
 (function () {
 	var ACCEL_PRECISION = 1E6;
 	var k = 0.01720209895; // gaussian gravitational constant
-	var GRAVITIONAL_CONSTANT = k * k /* AU^3 * day^-2 * sunMass^-1 */;
+	//var GRAVITIONAL_CONSTANT = k * k /* AU^3 * day^-2 * sunMass^-1 */;
+	var GRAVITIONAL_CONSTANT = 2.9591230378107436E-04; // GM from NASA horizons;
 	
 	PhysElement.prototype.applyGravity = function applyGravity (physElement) {
 		var vec = null;
