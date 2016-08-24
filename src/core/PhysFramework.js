@@ -232,6 +232,31 @@ PhysFramework.prototype.addObjectFromKepler2 = function addObjectFromKepler2 (ma
 	return this.addObjectFromKepler(mass, radius, color, a, e, I, w, Omega, M);
 };
 
+PhysFramework.prototype.addSpriteLabel = function (obj, name, scale) {
+	var nameObject = null;
+	
+	if(obj instanceof THREE.Object3D && name) {
+	
+		var str = "<----- " + name;
+	
+		var accSpace = "";
+		
+		for(var i = 0; i < str.length * 2; i++) {
+			accSpace += " ";
+		}
+	
+		nameObject = ThreeHelper.Sprite.FromText(accSpace + str);
+		obj.add(nameObject);
+		
+		
+		if(scale) {
+			nameObject.scale.multiplyScalar(scale);
+		}
+	}
+	
+	return nameObject;
+}
+
 PhysFramework.prototype.createReferenceAxis = function createReferenceAxis (obj) {
 	
 	var debugAxisMarkers = null;

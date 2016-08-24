@@ -15,6 +15,7 @@ function PhysSolarSystem (imgPath) {
 
 (function () {
 	
+	var LABEL_SCALE_FACT = 7.5;
 	var EARTH_MASS = 0.000003003; // in solar mass
 	var UA = 149597870.7; //km
 	
@@ -284,9 +285,10 @@ function PhysSolarSystem (imgPath) {
 					I = results[i].in,
 					peri = results[i].w,
 					node = results[i].om,
-					M = results[i].ma;
+					M = results[i].ma,
+					name = results[i].name;
 				
-				var object = physFramework.addObjectFromKepler(
+				var object = this.physFramework.addObjectFromKepler(
 						m,
 						i < 9 ? 0.01 : 0.00001,
 						i === 2 ? 0x00FF00 : 0xFFFFFF,
@@ -298,8 +300,10 @@ function PhysSolarSystem (imgPath) {
 						M
 					);
 					
-				physFramework.addTracingLine(object, 800);
+				this.physFramework.addTracingLine(object, 800);
 
+				this.physFramework.addSpriteLabel(object, name, LABEL_SCALE_FACT);
+				
 				this._objects.push(object);
 			}
 			
@@ -313,7 +317,8 @@ function PhysSolarSystem (imgPath) {
 		
 		if(this._epochDate === data.jd) {
 			var results = data.results[0];
-		
+			var name = results.name;
+	
 			// temp constants
 			body = this.physFramework.addObjectFromKepler(
 				EARTH_MASS * 4.519E-15, 0.01, 0xFF0000, results.a, results.ec, results.in, results.w, results.om, results.ma
@@ -321,12 +326,12 @@ function PhysSolarSystem (imgPath) {
 
 			this.physFramework.addTracingLine(body, 350);
 			
+			this.physFramework.addSpriteLabel(body, name, LABEL_SCALE_FACT);
+
 			this._objects.push(body);
 		}
 		
 		return body;
-
-		
 	};
 	
 })();
