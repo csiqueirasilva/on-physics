@@ -10,7 +10,7 @@
         <script src="../js/three.min.js"></script>
 		<script src="../js/stats.min.js"></script>
 		<script src="../js/OrbitControls.js"></script>
-
+		
 		<script src="../lib/on-daed-js/geral.js"></script>
         <script src="../lib/on-daed-js/vsop87.min.js"></script>
         <script src="../lib/on-daed-js/astro.js"></script>
@@ -61,7 +61,7 @@
 					
 					scene.add(sphereB);
 					
-					var timeInterval = 1 / 1000;
+					var timeInterval = 1;
 					
 					window.setInterval(function() {
 					
@@ -74,7 +74,7 @@
 						sphereA.physElement.exportPosition(sphereA.position);
 						sphereB.physElement.exportPosition(sphereB.position);
 
-					}, timeInterval * 1000);
+					}, 1);
 					
 				}, function (cameraControl, renderer, scene, camera, stats, clock) {
 					cameraControl.update();
