@@ -19,7 +19,7 @@ var PhysTrace = (function() {
 		
 		for (var i = 0; i < nVerts; i++) {
 			var v = new THREE.Vector3();
-			obj.physElement.exportPosition(v);
+			obj._physElement.exportPosition(v);
 			this.traceGeo.vertices.push(v);
 		}
 

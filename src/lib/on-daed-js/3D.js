@@ -469,7 +469,7 @@
                 h = element !== window ? element.offsetHeight : window.innerHeight;
 
         // camera
-        camera = new THREE.PerspectiveCamera(45, w / h, 1, 10000000000);
+        camera = new THREE.PerspectiveCamera(45, w / h, 0.000000001, 10000000000);
 
         // renderer
         renderer = new THREE.WebGLRenderer({antialias: true, alpha: true});

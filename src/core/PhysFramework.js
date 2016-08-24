@@ -10,11 +10,11 @@ function PhysFramework (particlePath, updateTime, camPosition) {
 	this._updateInterval = null;
 	this._updateFrequency = null;
 	
+	this._labels = [];
+	
 	this._accTime = 0;
 	
 	var framework = this;
-	
-	this.particleTexture = THREE.ImageUtils.loadTexture(particlePath);
 	
 	ON_DAED["3D"].create(function (scene, camera) {
 
@@ -111,14 +111,14 @@ PhysFramework.prototype.setObjectUpdate = function setObjectUpdate (updateTime) 
 		for(var i = 0; i < particles.length; i++) {
 			for(var j = 0; j < particles.length; j++) {
 				if(i !== j) {
-					particles[i].physElement.applyGravity(particles[j].physElement);
+					particles[i]._physElement.applyGravity(particles[j]._physElement);
 				}
 			}
 		}
 
 		for(var i = 0; i < particles.length; i++) {
-			particles[i].physElement.flushAccel(framework.timeInterval);
-			particles[i].physElement.exportPosition(particles[i].position);
+			particles[i]._physElement.flushAccel(framework.timeInterval);
+			particles[i]._physElement.exportPosition(particles[i].position);
 		}
 		
 		framework._accTime += framework.timeInterval;
@@ -147,55 +147,29 @@ PhysFramework.prototype.setCamPosition = function (camPosition) {
 };
 
 PhysFramework.prototype.addObject = function addObject (radius, mass, position, speed, color) {
-	var particle = new THREE.Sprite(
-		new THREE.SpriteMaterial({
-			map: this.particleTexture,
-			color: !isNaN(color) ? color : parseInt(Math.random() * 0x333333 + 0xCCCCCC)
-		})
-	);
+	var wrapper = new PhysObject3D();
 	
-	particle.scale.multiplyScalar(radius * 2);
+	wrapper.initFromVectors(radius, mass, position, speed, color);
 	
-	particle.physElement = new PhysElement();
-	particle.physElement._mass = mass;
-	particle.physElement._radius = radius;
-	
-	particle.physElement._position.x = particle.position.x = position.x;
-	particle.physElement._position.y = particle.position.y = position.y;
-	particle.physElement._position.z = particle.position.z = position.z;
+	this.particles.push(wrapper);
+	this.mainScene.add(wrapper);
 
-	particle.physElement._speed.x = speed.x;
-	particle.physElement._speed.y = speed.y;
-	particle.physElement._speed.z = speed.z;
-	
-	this.particles.push(particle);
-	this.mainScene.add(particle);
-	
-	return particle;
+	return wrapper;
 };
 
 PhysFramework.prototype.addObjectFromKepler = function addObjectFromKepler (mass, radius, color, a, e, I, w, Omega, M) {
-	var particle = new THREE.Sprite(
-		new THREE.SpriteMaterial({
-			map: this.particleTexture,
-			color: !isNaN(color) ? color : parseInt(Math.random() * 0x333333 + 0xCCCCCC)
-		})
-	);
+	var wrapper = new PhysObject3D();
 	
-	particle.scale.multiplyScalar(radius * 2);
+	wrapper.initFromKepler(mass, radius, color, a, e, I, w, Omega, M);
 	
-	particle.physElement = new PhysElement();
-	
-	particle.physElement.fromKepler(mass, radius, a, e, I, w, Omega, M);
-	
-	this.particles.push(particle);
-	this.mainScene.add(particle);
-	
-	return particle;
+	this.particles.push(wrapper);
+	this.mainScene.add(wrapper);
+
+	return wrapper;
 };
 
-PhysFramework.prototype.hide = function hide (obj) {
-	if(obj instanceof THREE.Sprite) {
+PhysFramework.prototype.hideObject = function hide (obj) {
+	if(obj instanceof THREE.Object3D) {
 		obj.visible = false;
 		if(obj._trace) {
 			obj._trace.trace.visible = false;
@@ -203,8 +177,8 @@ PhysFramework.prototype.hide = function hide (obj) {
 	}
 };
 
-PhysFramework.prototype.show = function show (obj) {
-	if(obj instanceof THREE.Sprite) {
+PhysFramework.prototype.showObject = function show (obj) {
+	if(obj instanceof THREE.Object3D) {
 		obj.visible = true;
 		if(obj._trace) {
 			obj._trace.trace.visible = true;
@@ -213,8 +187,8 @@ PhysFramework.prototype.show = function show (obj) {
 };
 
 PhysFramework.prototype.addTracingLine = function addTracingLine (obj, nVerts) {
-	if(obj instanceof THREE.Sprite) {
-		var color = obj.material.color.getHex() * 0.25;
+	if(obj instanceof THREE.Object3D) {
+		var color = obj.children[0].material.color.getHex() * 0.25;
 		var trace = new PhysTrace(obj, color, nVerts);
 		this.mainScene.add(trace.trace);
 	}
@@ -235,7 +209,7 @@ PhysFramework.prototype.addObjectFromKepler2 = function addObjectFromKepler2 (ma
 PhysFramework.prototype.addSpriteLabel = function (obj, name, scale) {
 	var nameObject = null;
 	
-	if(obj instanceof THREE.Object3D && name) {
+	if(obj instanceof PhysObject3D && name) {
 	
 		var str = "<----- " + name;
 	
@@ -252,18 +226,32 @@ PhysFramework.prototype.addSpriteLabel = function (obj, name, scale) {
 		if(scale) {
 			nameObject.scale.multiplyScalar(scale);
 		}
+		
+		this._labels.push(nameObject);
 	}
 	
 	return nameObject;
-}
+};
+
+PhysFramework.prototype.hideSpriteLabels = function () {
+	for(var i = 0; i < this._labels.length; i++) {
+		this._labels[i].visible = false;
+	}
+};
+
+PhysFramework.prototype.showSpriteLabels = function () {
+	for(var i = 0; i < this._labels.length; i++) {
+		this._labels[i].visible = true;
+	}
+};
 
 PhysFramework.prototype.createReferenceAxis = function createReferenceAxis (obj) {
 	
 	var debugAxisMarkers = null;
 	
-	if(obj instanceof THREE.Object3D && obj.physElement instanceof PhysElement) {
+	if(obj instanceof PhysObject3D) {
 	
-		obj.physElement.exportPosition(earth.position);
+		obj._physElement.exportPosition(earth.position);
 		
 		// reference axis to spawn position
 		debugAxisMarkers = new THREE.Object3D();

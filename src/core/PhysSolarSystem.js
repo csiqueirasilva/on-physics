@@ -15,9 +15,10 @@ function PhysSolarSystem (imgPath) {
 
 (function () {
 	
-	var LABEL_SCALE_FACT = 7.5;
+	var LABEL_SCALE_FACT = 0.1;
 	var EARTH_MASS = 0.000003003; // in solar mass
 	var UA = 149597870.7; //km
+	var EARTH_RADIUS = 4.2587504555972266254990218921612e-5; // AU
 	
 	PhysSolarSystem.prototype.getUA = function () {
 		return UA;
@@ -49,31 +50,6 @@ function PhysSolarSystem (imgPath) {
 		return ret;
 	};
 	
-	PhysSolarSystem.prototype.viewObject = function (epochDate, mass, radius, color, a, e, I, peri, node, M) {
-		var body = null;
-		if(!this._solarSystemInit && this.checkInputDate(epochDate)) {
-			body = this.physFramework.addObjectFromKepler(
-				mass, radius, color, a, e, I, peri, node, M
-			);
-
-			body.physElement._position.x = -body.physElement._position.x;
-			body.physElement._position.y = -body.physElement._position.y;
-			body.physElement._position.z = -body.physElement._position.z;
-			
-			body.physElement._speed.x = -body.physElement._speed.x;
-			body.physElement._speed.y = -body.physElement._speed.y;
-			body.physElement._speed.z = -body.physElement._speed.z;
-					
-			this.physFramework.addTracingLine(body, 350);
-			
-			this.initSolarSystem(epochDate);
-			
-			this._objects.push(body);
-		}
-		
-		return body;
-	};
-	
 	PhysSolarSystem.prototype.checkInputDate = function checkInputDate (jd) {
 		// 2451545.0 == Jan 1 2000 12:00
 		// 2378497.0 == Jan 1 1800 12:00
@@ -90,11 +66,11 @@ function PhysSolarSystem (imgPath) {
 	
 	PhysSolarSystem.prototype.hideOtherPlanets = function hideOtherPlanets () {
 		var physFramework = this.physFramework;
-		var topLimit = 9;
+		var topLimit = 12;
 		
 		for(var i = 1; i < topLimit; i++) {
 			if(i !== 3) {
-				physFramework.hide(this._objects[i]);
+				physFramework.hideObject(this._objects[i]);
 			}
 		}
 	};
@@ -239,7 +215,7 @@ function PhysSolarSystem (imgPath) {
 				0xFFFF00
 			);
 			
-			//sun.physElement._collided = true;
+			//sun._physElement._collided = true;
 			
 			this._objects.push(sun, mercury, venus, earth, mars, jupiter, saturn, uranus, neptune);
 			this._solarSystemInit = true;
@@ -253,7 +229,7 @@ function PhysSolarSystem (imgPath) {
 			
 			// SUN
 			var sun = physFramework.addObject(
-				0.1,
+				EARTH_RADIUS * 103.44673896894963601247957212896,
 				1,
 				{x: 0, y: 0, z: 0},
 				{x: 0, y: 0, z: 0},
@@ -277,7 +253,21 @@ function PhysSolarSystem (imgPath) {
 				EARTH_MASS * 0.00015 * 0.22 // pallas
 			];
 			
-			for(var i = 0; i < 8; i++) {
+			var radius = [
+				EARTH_RADIUS * 0.383,
+				EARTH_RADIUS * 0.949,
+				EARTH_RADIUS,
+				EARTH_RADIUS * 0.532,
+				EARTH_RADIUS * 11.21,
+				EARTH_RADIUS * 9.45,
+				EARTH_RADIUS * 4.01,
+				EARTH_RADIUS * 3.88,
+				EARTH_RADIUS * 0.07455658452362266520169518129022,
+				EARTH_RADIUS * 0.03937007874015748031496062992126,
+				EARTH_RADIUS * 0.04999257168325657406031793195662 
+			];
+			
+			for(var i = 0; i < results.length; i++) {
 			
 				var m = mass[i],
 					a = results[i].a,
@@ -286,11 +276,12 @@ function PhysSolarSystem (imgPath) {
 					peri = results[i].w,
 					node = results[i].om,
 					M = results[i].ma,
-					name = results[i].name;
+					name = results[i].name,
+					r = radius[i];
 				
 				var object = this.physFramework.addObjectFromKepler(
 						m,
-						i < 9 ? 0.01 : 0.00001,
+						r,
 						i === 2 ? 0x00FF00 : 0xFFFFFF,
 						a,
 						e,
@@ -318,10 +309,13 @@ function PhysSolarSystem (imgPath) {
 		if(this._epochDate === data.jd) {
 			var results = data.results[0];
 			var name = results.name;
-	
+			
+			var r = EARTH_RADIUS * 2.2284950230277819046204130144109e-5; // temp radius
+			var m = EARTH_MASS * 4.519E-15;// temp mass
+			
 			// temp constants
 			body = this.physFramework.addObjectFromKepler(
-				EARTH_MASS * 4.519E-15, 0.01, 0xFF0000, results.a, results.ec, results.in, results.w, results.om, results.ma
+				m, r, 0xFF0000, results.a, results.ec, results.in, results.w, results.om, results.ma
 			);
 
 			this.physFramework.addTracingLine(body, 350);

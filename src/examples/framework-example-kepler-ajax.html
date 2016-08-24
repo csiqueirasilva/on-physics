@@ -1,12 +1,7 @@
 <html>
 	<head>
-		<title>Framework with Kepler Parameters example</title>
+		<title>Framework with Kepler Parameters (AJAX) example</title>
 
-		<script src="../core/PhysTrace.js"></script>
-		<script src="../core/PhysElement.js"></script>
-		<script src="../core/PhysFramework.js"></script>
-		<script src="../core/PhysSolarSystem.js"></script>
-		
 		<script src="../js/jquery.min.js"></script>
         <script src="../js/bootstrap.min.js"></script>
 
@@ -14,6 +9,12 @@
 		<script src="../js/stats.min.js"></script>
 		<script src="../js/OrbitControls.js"></script>
 
+		<script src="../core/PhysTrace.js"></script>
+		<script src="../core/PhysElement.js"></script>
+		<script src="../core/PhysFramework.js"></script>
+		<script src="../core/PhysSolarSystem.js"></script>
+		<script src="../core/PhysObject3D.js"></script>
+		
 		<script src="../lib/on-daed-js/geral.js"></script>
         <script src="../lib/on-daed-js/vsop87.min.js"></script>
         <script src="../lib/on-daed-js/astro.js"></script>
@@ -86,6 +87,7 @@
 	
 		<script>
             
+			var SERVER_ADDR = "http://daed-dev.on.br";
 			var solarSystemFramework = new PhysSolarSystem('../imgs/particleTexture.png');
 			var physFramework = solarSystemFramework.physFramework;
 			var EARTH_MASS = solarSystemFramework.getEarthMass();
@@ -125,12 +127,12 @@
 						}
 					};
 					
-					getObject.open("GET", "http://daed-dev.on.br/astro/horizons/elements?jd="+JD+"&id="+objectID, true);
+					getObject.open("GET", SERVER_ADDR + "/astro/horizons/elements?jd="+JD+"&id="+objectID, true);
 					getObject.send();
 				}
 			};
 			
-			getSDM.open("GET", "http://daed-dev.on.br/astro/horizons/sdm?jd="+JD, true);
+			getSDM.open("GET", SERVER_ADDR + "/astro/horizons/sdm?jd="+JD, true);
 			getSDM.send();
 			
 			function inputBindings() {
@@ -208,9 +210,9 @@
 					
 					e = document.getElementById('posicao-sol');
 					e.innerHTML = "<b>sun position</b><br /> x: " +
-						sun.physElement._position.x.toFixed(15) + "<br />y: " + 
-						sun.physElement._position.y.toFixed(15) + "<br />z: " + 
-						sun.physElement._position.z.toFixed(15);
+						sun._physElement._position.x.toFixed(15) + "<br />y: " + 
+						sun._physElement._position.y.toFixed(15) + "<br />z: " + 
+						sun._physElement._position.z.toFixed(15);
 						
 					e = document.getElementById('info-tempo');
 					e.innerHTML = "t = " + physFramework._accTime.toFixed(2) + " dias / " + (physFramework._accTime / 365.25).toFixed(2) + " anos" + "<br />" + stringDate;
@@ -224,7 +226,7 @@
 					window.clearInterval(loadInterval);
 					solarSystemFramework.loadStandardDynamicModel(SDMData);
 					solarSystemFramework.loadObject(objectData);
-					solarSystemFramework.hideOtherPlanets();
+					//solarSystemFramework.hideOtherPlanets();
 					inputBindings();
 					ready();
 					document.body.removeChild(document.getElementById('loading-screen'));
