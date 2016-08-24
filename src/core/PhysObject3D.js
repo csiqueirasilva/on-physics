@@ -3,6 +3,7 @@ function PhysObject3D () {
 	this._physElement = new PhysElement();
 	this._particle = null;
 	this._label = null;
+	this._trace = null;
 	this._init = false;
 };
 

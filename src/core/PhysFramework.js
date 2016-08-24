@@ -169,18 +169,18 @@ PhysFramework.prototype.addObjectFromKepler = function addObjectFromKepler (mass
 };
 
 PhysFramework.prototype.hideObject = function hide (obj) {
-	if(obj instanceof THREE.Object3D) {
+	if(obj instanceof PhysObject3D) {
 		obj.visible = false;
-		if(obj._trace) {
+		if(obj._trace !== null) {
 			obj._trace.trace.visible = false;
 		}
 	}
 };
 
 PhysFramework.prototype.showObject = function show (obj) {
-	if(obj instanceof THREE.Object3D) {
+	if(obj instanceof PhysObject3D) {
 		obj.visible = true;
-		if(obj._trace) {
+		if(obj._trace !== null) {
 			obj._trace.trace.visible = true;
 		}
 	}
@@ -222,6 +222,7 @@ PhysFramework.prototype.addSpriteLabel = function (obj, name, scale) {
 		nameObject = ThreeHelper.Sprite.FromText(accSpace + str);
 		obj.add(nameObject);
 		
+		obj._label = nameObject;
 		
 		if(scale) {
 			nameObject.scale.multiplyScalar(scale);

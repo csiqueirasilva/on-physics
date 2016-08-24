@@ -95,6 +95,8 @@
 			var SDMData = null;
 			var objectData = null;
 			
+			var showAllBodies = null;
+			
 			/* 
 				2451544.5 - Jan 1 2000
 				2461875.5 - April 13 2028
@@ -111,6 +113,15 @@
 			do {
 				objectID = prompt("INPUT ELEMENT ID (eg: APOPHIS = 99942):", "99942");
 			} while (objectID < 10);
+			
+			do {
+				showAllBodies = prompt("SHOW ALL BODIES ? (<t> true, <f> false):", "f");
+				if(showAllBodies === "t") {
+					showAllBodies = true
+				} else if (showAllBodies === "f") {
+					showAllBodies = false;
+				}
+			} while (showAllBodies === null);
 			
 			document.getElementById('loading-box').style.display = "block";
 			
@@ -226,7 +237,9 @@
 					window.clearInterval(loadInterval);
 					solarSystemFramework.loadStandardDynamicModel(SDMData);
 					solarSystemFramework.loadObject(objectData);
-					//solarSystemFramework.hideOtherPlanets();
+					if(!showAllBodies) {
+						solarSystemFramework.hideOtherPlanets();
+					}
 					inputBindings();
 					ready();
 					document.body.removeChild(document.getElementById('loading-screen'));
