@@ -134,7 +134,7 @@
 					getObject.onreadystatechange = function(data) {
 						if (getObject.readyState == 4 && getObject.status == 200) {
 							objectData = JSON.parse(getObject.responseText);
-							objectData.results[0].name = "APOPHIS";
+							objectData.results[0].name = objectData.results[0].name ? objectData.results[0].name : objectData.results[0].id;
 						}
 					};
 					

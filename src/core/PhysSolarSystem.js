@@ -238,38 +238,9 @@ function PhysSolarSystem (imgPath) {
 
 			this._objects.push(sun);
 			
-			// temp variable
-			var mass = [
-				EARTH_MASS * 0.055, // mercury
-				EARTH_MASS * 0.815, // venus
-				EARTH_MASS, // earth
-				EARTH_MASS * 0.107, // mars
-				EARTH_MASS * 317.8, // jupiter
-				EARTH_MASS * 95.16, // saturn
-				EARTH_MASS * 14.54, // uranus
-				EARTH_MASS * 17.15, // neptune
-				EARTH_MASS * 0.00015, // ceres
-				1.30E-10, // vesta
-				EARTH_MASS * 0.00015 * 0.22 // pallas
-			];
-			
-			var radius = [
-				EARTH_RADIUS * 0.383,
-				EARTH_RADIUS * 0.949,
-				EARTH_RADIUS,
-				EARTH_RADIUS * 0.532,
-				EARTH_RADIUS * 11.21,
-				EARTH_RADIUS * 9.45,
-				EARTH_RADIUS * 4.01,
-				EARTH_RADIUS * 3.88,
-				EARTH_RADIUS * 0.07455658452362266520169518129022,
-				EARTH_RADIUS * 0.03937007874015748031496062992126,
-				EARTH_RADIUS * 0.04999257168325657406031793195662 
-			];
-			
 			for(var i = 0; i < results.length; i++) {
 			
-				var m = mass[i],
+				var m = results[i].mass,
 					a = results[i].a,
 					e = results[i].ec,
 					I = results[i].in,
@@ -277,7 +248,7 @@ function PhysSolarSystem (imgPath) {
 					node = results[i].om,
 					M = results[i].ma,
 					name = results[i].name,
-					r = radius[i];
+					r = results[i].radius;
 				
 				var object = this.physFramework.addObjectFromKepler(
 						m,
@@ -310,8 +281,8 @@ function PhysSolarSystem (imgPath) {
 			var results = data.results[0];
 			var name = results.name;
 			
-			var r = EARTH_RADIUS * 2.2284950230277819046204130144109e-5; // temp radius
-			var m = EARTH_MASS * 4.519E-15;// temp mass
+			var r = data.results[0].radius || (EARTH_RADIUS * 2.2284950230277819046204130144109e-5); // defaults to apophis' radius
+			var m = data.results[0].mass || (EARTH_MASS * 4.519E-15); // defaults to apophis' mass
 			
 			// temp constants
 			body = this.physFramework.addObjectFromKepler(
