@@ -97,6 +97,8 @@
 			
 			var showAllBodies = null;
 			
+			var objectName = "";
+			
 			/* 
 				2451544.5 - Jan 1 2000
 				2461875.5 - April 13 2028
@@ -134,7 +136,7 @@
 					getObject.onreadystatechange = function(data) {
 						if (getObject.readyState == 4 && getObject.status == 200) {
 							objectData = JSON.parse(getObject.responseText);
-							objectData.results[0].name = objectData.results[0].name ? objectData.results[0].name : objectData.results[0].id;
+							objectName = objectData.results[0].name = objectData.results[0].name ? objectData.results[0].name : objectData.results[0].id;
 						}
 					};
 					
@@ -217,7 +219,7 @@
 					
 					var e = document.getElementById('info-distancia');
 					e.innerHTML = "<b>earth data</b><br />d(sun) = " + formatNumber(dist) + " km"
-					+ "<br />d(apophis) = " + formatNumber(bodiesDist) + " km<br />Closest distance: " + formatNumber(closestDist) + " km<br/>on " + closestDate + "<br /><b>current orbit</b>" + "<br />aphelion = " + aphelion + "<br />perihelion = " + perihelion;
+					+ "<br />d(" + objectName + ") = " + formatNumber(bodiesDist) + " km<br />Closest distance: " + formatNumber(closestDist) + " km<br/>on " + closestDate + "<br /><b>current orbit</b>" + "<br />aphelion = " + aphelion + "<br />perihelion = " + perihelion;
 					
 					e = document.getElementById('posicao-sol');
 					e.innerHTML = "<b>sun position</b><br /> x: " +
