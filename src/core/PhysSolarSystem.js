@@ -240,15 +240,15 @@ function PhysSolarSystem (imgPath) {
 			
 			for(var i = 0; i < results.length; i++) {
 			
-				var m = results[i].mass,
-					a = results[i].a,
-					e = results[i].ec,
-					I = results[i].in,
-					peri = results[i].w,
-					node = results[i].om,
-					M = results[i].ma,
+				var m = parseFloat(results[i].mass),
+					a = parseFloat(results[i].a),
+					e = parseFloat(results[i].ec),
+					I = parseFloat(results[i].in),
+					peri = parseFloat(results[i].w),
+					node = parseFloat(results[i].om),
+					M = parseFloat(results[i].ma),
 					name = results[i].name,
-					r = results[i].radius;
+					r = parseFloat(results[i].radius);
 				
 				var object = this.physFramework.addObjectFromKepler(
 						m,
@@ -281,12 +281,21 @@ function PhysSolarSystem (imgPath) {
 			var results = data.results[0];
 			var name = results.name;
 			
-			var r = data.results[0].radius || (EARTH_RADIUS * 2.2284950230277819046204130144109e-5); // defaults to apophis' radius
-			var m = data.results[0].mass || (EARTH_MASS * 4.519E-15); // defaults to apophis' mass
+			var r = results.radius || (EARTH_RADIUS * 2.2284950230277819046204130144109e-5); // defaults to apophis' radius
+			var m = results.mass || (EARTH_MASS * 4.519E-15); // defaults to apophis' mass
+			
+			r = parseFloat(r);
+			m = parseFloat(m);
 			
 			// temp constants
 			body = this.physFramework.addObjectFromKepler(
-				m, r, 0xFF0000, results.a, results.ec, results.in, results.w, results.om, results.ma
+				m, r, 0xFF0000, 
+				parseFloat(results.a),
+				parseFloat(results.ec), 
+				parseFloat(results.in), 
+				parseFloat(results.w), 
+				parseFloat(results.om), 
+				parseFloat(results.ma)
 			);
 
 			this.physFramework.addTracingLine(body, 350);

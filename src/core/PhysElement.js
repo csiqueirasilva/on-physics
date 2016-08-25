@@ -107,6 +107,31 @@ function PhysElement () {
 		return Math.round(E*Math.pow(10,dp))/Math.pow(10,dp) * (Math.PI / 180);
 	}
 	
+	// Oliver Montenbruck, Thomas Pfleger - Astronomy on the Personal Computer, Position in the Orbit
+	// 4.3 Mathematical treatment of Kepler's Equation (pg 67)
+	function HyperEccAnom(ECC, MH) {
+		
+		var MAXIT = 15;
+		var EPS = 1E-10;
+		
+		var H = Math.log(2 * Math.abs(MH) / ECC + 1.8);
+		if(MH < 0) H = -H;
+		var SINHH = sinh(H);
+		var COSHH = cosh(H);
+		var F = ECC * SINHH - H - MH;
+		var I = 0;
+		while( (Math.abs(F) > EPS * (1 + Math.abs(H + MH))) && (I < MAXIT) ) {
+			H = H - F / (ECC * COSHH - 1);
+			SINHH = sinh(H);
+			COSHH = cosh(H);
+			F = ECC * SINHH - H - MH;
+			I++;
+		}
+		
+		return H;
+		
+	}
+	
 	function R1 (angle) {
 		return [
 			1, 0, 0,
@@ -156,6 +181,14 @@ function PhysElement () {
 			(Math.sin(w) * Math.sin(I)) * x + (Math.cos(w) * Math.sin(I)) * y
 		];
 	}
+
+	function sinh (x) {
+		return (Math.pow(Math.E, x) - Math.pow(Math.E, -x))/2;
+	}
+
+	function cosh (x) {
+		return (Math.pow(Math.E, x) + Math.pow(Math.E, -x))/2;
+	}
 	
 	function keplerToCartesian(a, e, I, w, Omega, M) {
 		/* 
@@ -173,26 +206,43 @@ function PhysElement () {
 			Online converter - https://janus.astro.umd.edu/orbits/elements/convertframe.html
 		*/ 
 	
-		// Nico Sneeuw Pg 23 (2.11) / formula sheet (1)
-		var E = EccAnom(e, M, 6);
+		var E;
 	
-		// Nico Sneeuw Pg 23 (2.12) / formula sheet (2)
-		var q = [
-			a * (Math.cos(E) - e),
-			a * Math.sqrt(1 - e * e) * Math.sin(E),
-			0
-		];
+		var q = []; 
+		var qDash = [];
 		
-		// Nico Sneeuw Pg 23 (2.12) / formula sheet (2)
-		// Oliver, Thomas Pg 64
-		var qDashXScalar = -Math.sqrt(GRAVITIONAL_CONSTANT / a);
-		var qDashYScalar = Math.sqrt((GRAVITIONAL_CONSTANT * (1 - e * e)) / a);
-		var qDashDiv = (1 - e * Math.cos(E));
-		var qDash = [
-			qDashXScalar * (Math.sin(E) / qDashDiv),
-			qDashYScalar * (Math.cos(E) / qDashDiv),
-			0
-		];
+		if(e > 1) {
+			
+			E = HyperEccAnom(e, M);
+		
+			var absA = Math.abs(a);
+			var sinhH = sinh(E);
+			var coshH = cosh(E);
+		
+			q[0] = absA * (e - coshH);
+			q[1] = absA * Math.sqrt(e * e - 1) * sinhH;
+			q[2] = 0;
+			
+			qDash[0] = -Math.sqrt(GRAVITIONAL_CONSTANT / absA) * (sinhH / (e * coshH - 1));
+			qDash[1] =  Math.sqrt((GRAVITIONAL_CONSTANT * (e * e - 1)) / absA) * (coshH / (e * coshH - 1));
+			qDash[2] = 0;
+		} else if (e === 1) {
+		} else {
+		
+			E = EccAnom(e, M, 15);
+		
+			q[0] = a * (Math.cos(E) - e);
+			q[1] = a * Math.sqrt(1 - e * e) * Math.sin(E);
+			q[2] = 0;
+			
+			var qDashXScalar = -Math.sqrt(GRAVITIONAL_CONSTANT / a);
+			var qDashYScalar = Math.sqrt((GRAVITIONAL_CONSTANT * (1 - e * e)) / a);
+			var qDashDiv = (1 - e * Math.cos(E));
+			
+			qDash[0] = qDashXScalar * (Math.sin(E) / qDashDiv);
+			qDash[1] = qDashYScalar * (Math.cos(E) / qDashDiv);
+			qDash[2] = 0;
+		}
 		
 		var r = keplerToCartesianMultMat(I, w, Omega, q[0], q[1]);
 		var rDash = keplerToCartesianMultMat(I, w, Omega, qDash[0], qDash[1]);
