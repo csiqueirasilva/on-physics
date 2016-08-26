@@ -78,7 +78,7 @@
 	
 		<div id="info-box">
 			<div id="pausar-tempo">Restart time</div>
-			<div id="speed-icr">0.005</div>
+			<div id="speed-icr">0.0006945</div>
 		
 			<div id="info-distancia"></div>
 			<div id="info-tempo"></div>
@@ -116,7 +116,7 @@
 
 			do {
 				objectID = prompt("INPUT ELEMENT ID (eg: APOPHIS = 99942):", "99942");
-			} while (objectID < 10);
+			} while (isNaN(objectID));
 			
 			do {
 				showAllBodies = prompt("SHOW ALL BODIES ? (<t> true, <f> false):", "f");
@@ -163,7 +163,7 @@
 				}
 				
 				var smallerTimeStep = document.getElementById('speed-icr').innerHTML;
-				var longerTimeStep = "0.05";
+				var longerTimeStep = parseFloat(smallerTimeStep) * 60;
 				
 				document.getElementById('speed-icr').onclick = function(ev) {
 					if(this.innerHTML === smallerTimeStep) {

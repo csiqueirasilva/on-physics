@@ -282,7 +282,7 @@ function PhysSolarSystem (imgPath) {
 			var name = results.name;
 			
 			var r = results.radius || (EARTH_RADIUS * 2.2284950230277819046204130144109e-5); // defaults to apophis' radius
-			var m = results.mass || (EARTH_MASS * 4.519E-15); // defaults to apophis' mass
+			var m = results.mass || 3.966817496229261e-28;//(EARTH_MASS * 4.519E-15); // defaults to apophis' mass
 			
 			r = parseFloat(r);
 			m = parseFloat(m);
