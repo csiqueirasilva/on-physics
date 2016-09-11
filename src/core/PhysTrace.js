@@ -19,7 +19,9 @@ var PhysTrace = (function() {
 		
 		for (var i = 0; i < nVerts; i++) {
 			var v = new THREE.Vector3();
-			obj._physElement.exportPosition(v);
+			if(obj instanceof PhysObject3D) {
+				obj._physElement.exportPosition(v);
+			}
 			this.traceGeo.vertices.push(v);
 		}
 
@@ -36,16 +38,18 @@ var PhysTrace = (function() {
 		var obj = this.obj;
 		var mat = this.mat;
 		
-		for (var i = 0; i < traceGeo.vertices.length - 1; i++) {
-			traceGeo.vertices[i].copy(traceGeo.vertices[i + 1]);
-		}
+		if(!traceGeo.vertices[traceGeo.vertices.length - 1].equals(obj.position)) {
+			for (var i = 0; i < traceGeo.vertices.length - 1; i++) {
+				traceGeo.vertices[i].copy(traceGeo.vertices[i + 1]);
+			}
 
-		var v = new THREE.Vector3().copy(obj.position);
-		
-		traceGeo.vertices[traceGeo.vertices.length - 1].copy(v);
-		
-		traceGeo.computeLineDistances();
-		traceGeo.verticesNeedUpdate = true;
+			var v = new THREE.Vector3().copy(obj.position);
+			
+			traceGeo.vertices[traceGeo.vertices.length - 1].copy(v);
+			
+			traceGeo.computeLineDistances();
+			traceGeo.verticesNeedUpdate = true;
+		}
 	};
 	
 	window.StartTracingLines = function StartTracingLines (t) {

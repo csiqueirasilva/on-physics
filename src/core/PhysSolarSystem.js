@@ -236,6 +236,8 @@ function PhysSolarSystem (imgPath) {
 				0xFFFF00
 			);
 
+			sun.name = "SUN";
+			
 			this._objects.push(sun);
 			
 			for(var i = 0; i < results.length; i++) {
@@ -266,6 +268,8 @@ function PhysSolarSystem (imgPath) {
 
 				this.physFramework.addSpriteLabel(object, name, LABEL_SCALE_FACT);
 				
+				object.name = name;
+				
 				this._objects.push(object);
 			}
 			
@@ -289,7 +293,7 @@ function PhysSolarSystem (imgPath) {
 			
 			// temp constants
 			body = this.physFramework.addObjectFromKepler(
-				m, r, 0xFF0000, 
+				m, r, data.color || 0xFF0000, 
 				parseFloat(results.a),
 				parseFloat(results.ec), 
 				parseFloat(results.in), 
@@ -298,7 +302,7 @@ function PhysSolarSystem (imgPath) {
 				parseFloat(results.ma)
 			);
 
-			this.physFramework.addTracingLine(body, 350);
+			this.physFramework.addTracingLine(body, 2000);
 			
 			this.physFramework.addSpriteLabel(body, name, LABEL_SCALE_FACT);
 
@@ -306,6 +310,237 @@ function PhysSolarSystem (imgPath) {
 		}
 		
 		return body;
+	};
+	
+	PhysSolarSystem.prototype.setCameraAtObject = function setCameraAtObject (src, dst, cb) {
+		var srcObj = this._objects[src];
+		var dstObj = this._objects[dst];
+		if(srcObj && dstObj) {
+			this.physFramework.mainCamera.position.copy(srcObj.position);
+		
+			this.physFramework._callbackRender = function () {
+				srcObj.visible = false;
+				srcObj._trace.trace.visible = false;
+				this.mainCamera.position.copy(srcObj.position);
+				this.mainControls.target.copy(dstObj.position);
+				if(cb instanceof Function) {
+					cb(srcObj, dstObj);
+				}
+			};
+			dstObj.swapToSphere();
+		}
+	};
+	
+	PhysSolarSystem.prototype.setCameraOnEarthAtJupiter = function setCameraOnEarthAtJupiter (IO, Europa, Ganymede, Callisto) {
+		for(var i = 0; i < (this._objects.length - 4); i++) {
+			if(i !== 5) {
+				this._objects[i].visible = false;
+			}
+		}
+
+		var coordsWrapper = MathHelper.buildAxes(10000);
+		
+		var refIO = new THREE.Object3D();
+		
+		var jupiter = this._objects[5];
+		
+		jupiter.add(coordsWrapper);
+		jupiter._sphere.material.color.setHex(0xffe066);
+		jupiter._trace.trace.visible = false;
+
+		var viewScalar = 15;
+		
+		IO.scale.multiplyScalar(viewScalar);
+		Europa.scale.multiplyScalar(viewScalar);
+		Ganymede.scale.multiplyScalar(viewScalar);
+		Callisto.scale.multiplyScalar(viewScalar);
+		
+		IO.swapToSphere();
+		Europa.swapToSphere();
+		Ganymede.swapToSphere();
+		Callisto.swapToSphere();
+		
+		this.setCameraAtObject(3, 5, function(earth, jupiter) {
+			earth.updateMatrixWorld();
+			jupiter.updateMatrixWorld();
+			var pos = earth.position.clone();
+			var finalPos = jupiter.worldToLocal(pos);
+			//coordsWrapper.lookAt(finalPos);
+		});
+		
+		solarSystemFramework.setCameraFOV(0.25);
+	};
+	
+	PhysSolarSystem.prototype.setCameraFOV = function setCameraFOV (val) {
+		this.physFramework.mainCamera.fov = val;
+		this.physFramework.mainCamera.updateProjectionMatrix();
+	};
+	
+	PhysSolarSystem.prototype.fetchNetworkData = function fetchNetworkData (url, callback) {
+	
+		var getSDM = new XMLHttpRequest();
+		getSDM.onreadystatechange = function(data) {
+			if (getSDM.readyState == 4 && getSDM.status == 200) {
+				if(callback instanceof Function) {
+					callback(JSON.parse(getSDM.responseText));
+				}
+			}
+		};
+		
+		getSDM.open("GET", url, true);
+		getSDM.send();
+	};
+	
+	var lastFetchJD = null;
+	var count = 0;
+	var SERVER_ADDR = "http://daed-dev.on.br";
+	
+	PhysSolarSystem.prototype.fetchGalileoMoonsData = function fetchGalileoMoonsData (JDstep, IO, Europa, Ganymede, Callisto) {
+
+		var JD = parseFloat(this._epochDate) + parseFloat(JDstep);
+	
+		var createdJob = false;
+	
+		console.log(lastFetchJD, JD);
+	
+		if(lastFetchJD !== JD && count === 0) {
+		
+			count = 1;
+			lastFetchJD = JD;
+			createdJob = true;
+
+			var jupiter = this._objects[5];
+			var earth = this._objects[3];
+			
+			var urlEarth = SERVER_ADDR + "/astro/horizons/elements?jd="+JD+"&id="+399;
+			var urlJupiter = SERVER_ADDR + "/astro/horizons/elements?jd="+JD+"&id="+599;
+			var url501 = SERVER_ADDR + "/astro/horizons/elements?jd="+JD+"&id="+501;
+			var url502 = SERVER_ADDR + "/astro/horizons/elements?jd="+JD+"&id="+502;
+			var url503 = SERVER_ADDR + "/astro/horizons/elements?jd="+JD+"&id="+503;
+			var url504 = SERVER_ADDR + "/astro/horizons/elements?jd="+JD+"&id="+504;
+
+			solarSystemFramework.fetchNetworkData(urlEarth, function(data) {
+				
+				var results = data.results[0];
+				var object = earth;
+			
+				object._physElement.fromKepler(object._physElement._mass, object._physElement._radius, 
+					parseFloat(results.a),
+					parseFloat(results.ec), 
+					parseFloat(results.in), 
+					parseFloat(results.w), 
+					parseFloat(results.om), 
+					parseFloat(results.ma));
+
+				window.setTimeout(function() {
+						
+					solarSystemFramework.fetchNetworkData(urlJupiter, function(data) {
+					
+						var results = data.results[0];
+						var object = jupiter;
+					
+						object._physElement.fromKepler(object._physElement._mass, object._physElement._radius, 
+							parseFloat(results.a),
+							parseFloat(results.ec), 
+							parseFloat(results.in), 
+							parseFloat(results.w), 
+							parseFloat(results.om), 
+							parseFloat(results.ma));
+					
+						window.setTimeout(function() {
+					
+							solarSystemFramework.fetchNetworkData(url501, function(data) {
+							
+								var results = data.results[0];
+								var object = IO;
+							
+								object._physElement.fromKepler(object._physElement._mass, object._physElement._radius, 
+									parseFloat(results.a),
+									parseFloat(results.ec), 
+									parseFloat(results.in), 
+									parseFloat(results.w), 
+									parseFloat(results.om), 
+									parseFloat(results.ma));
+								
+								object._physElement.exportPosition(object.position);
+								
+								window.setTimeout(function() {
+								
+									solarSystemFramework.fetchNetworkData(url502, function(data) {
+										var results = data.results[0];
+										var object = Europa;
+									
+										object._physElement.fromKepler(object._physElement._mass, object._physElement._radius, 
+											parseFloat(results.a),
+											parseFloat(results.ec), 
+											parseFloat(results.in), 
+											parseFloat(results.w), 
+											parseFloat(results.om), 
+											parseFloat(results.ma));
+										
+										object._physElement.exportPosition(object.position);
+										
+										window.setTimeout(function() {
+										
+											solarSystemFramework.fetchNetworkData(url503, function(data) {
+
+												var results = data.results[0];
+												var object = Ganymede;
+											
+												object._physElement.fromKepler(object._physElement._mass, object._physElement._radius, 
+													parseFloat(results.a),
+													parseFloat(results.ec), 
+													parseFloat(results.in), 
+													parseFloat(results.w), 
+													parseFloat(results.om), 
+													parseFloat(results.ma));
+											
+												object._physElement.exportPosition(object.position);
+											
+												window.setTimeout(function() {
+
+													solarSystemFramework.fetchNetworkData(url504, function(data) {
+														var results = data.results[0];
+														var object = Callisto;
+													
+														object._physElement.fromKepler(object._physElement._mass, object._physElement._radius, 
+															parseFloat(results.a),
+															parseFloat(results.ec), 
+															parseFloat(results.in), 
+															parseFloat(results.w), 
+															parseFloat(results.om), 
+															parseFloat(results.ma));
+														
+														object._physElement.exportPosition(object.position);
+														
+														window.setTimeout(function() {
+															lastFetchJD = null;
+															count = 0;
+														}, 300);
+														
+													});
+
+												}, 100);
+											
+											});
+										
+										}, 100);
+										
+									});
+
+								}, 100);
+								
+							});
+					
+						}, 100);
+
+					});
+				}, 100);
+
+			});
+		}
+		
+		return createdJob;
 	};
 	
 })();

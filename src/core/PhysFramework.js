@@ -1,15 +1,15 @@
 function PhysFramework (particlePath, updateTime, camPosition) {
 	
 	var element = document.body;
-	var controls;
 	
+	this.mainControls = null;
 	this.particles = [];
-	this.sceneAxes = MathHelper.buildAxes(10000);
+	this.sceneAxes = null;//MathHelper.buildAxes(10000);
 	this.mainScene = null;
 	this.mainCamera;
 	this._updateInterval = null;
 	this._updateFrequency = null;
-	
+	this._callbackRender = null;
 	this._labels = [];
 	
 	this._accTime = 0;
@@ -20,12 +20,18 @@ function PhysFramework (particlePath, updateTime, camPosition) {
 
 		framework.mainScene = scene;
 		framework.mainCamera = camera;
-
-		scene.add(framework.sceneAxes);
+	
+		if(framework.sceneAxes !== null) {
+			scene.add(framework.sceneAxes);
+		}
 		
 		framework.setCamPosition(camPosition);
 		
 	}, function (cameraControl, renderer, scene, camera, stats, clock) {
+		if(framework._callbackRender instanceof Function) {
+			framework._callbackRender();
+		}
+		
 		cameraControl.update();
 		ON_DAED["3D"].update();
 		renderer.render(scene, camera);
@@ -34,13 +40,13 @@ function PhysFramework (particlePath, updateTime, camPosition) {
 	function (camera, renderer) {
 		var oc = new THREE.OrbitControls(camera, element);
 		oc.enableDamping = false;
-		controls = oc;
+		framework.mainControls = oc;
 		return oc;
 	});
 	
 	this.timeInterval = 0.0;
 	
-	ON_DAED['3D'].START_RENDER();	
+	ON_DAED['3D'].START_RENDER();
 	
 	this.setObjectUpdate(updateTime);
 }
@@ -101,10 +107,7 @@ PhysFramework.prototype.setObjectUpdate = function setObjectUpdate (updateTime) 
 	var particles = this.particles;
 	var updateFrequency = !isNaN(updateTime) ? updateTime : 1;
 	
-	if(this._updateInterval !== null) {
-		window.clearInterval(this._updateInterval);
-		this._updateInterval = null;
-	}
+	this.clearObjectUpdate();
 	
 	this._updateInterval = window.setInterval(function() {
 	
@@ -187,8 +190,8 @@ PhysFramework.prototype.showObject = function show (obj) {
 };
 
 PhysFramework.prototype.addTracingLine = function addTracingLine (obj, nVerts) {
-	if(obj instanceof THREE.Object3D) {
-		var color = obj.children[0].material.color.getHex() * 0.25;
+	if(obj instanceof PhysObject3D) {
+		var color = obj._tracingLineColor;
 		var trace = new PhysTrace(obj, color, nVerts);
 		this.mainScene.add(trace.trace);
 	}
@@ -284,4 +287,4 @@ PhysFramework.prototype.createReferenceAxis = function createReferenceAxis (obj)
 	}
 	
 	return debugAxisMarkers;
-}
+};
