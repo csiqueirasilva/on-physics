@@ -58,7 +58,7 @@ var PhysWrapperTrace = (function() {
 			obj.updateMatrixWorld();
 			
 			var pos = this.worldToLocal(obj.position);
-			pos.multiplyScalar(0.99999); // against z-fighting
+			pos.multiplyScalar(0.9999); // against z-fighting
 			
 			if(!traceGeo.vertices[traceGeo.vertices.length - 1].equals(pos)) {
 				for (var j = 0; j < traceGeo.vertices.length - 1; j++) {
