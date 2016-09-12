@@ -29,6 +29,33 @@
         <link href="../css/bootstrap-responsive.css" rel="stylesheet"/>
 
 		<style>
+			#report-box {
+				position: absolute;
+				right: 1%;
+				bottom: 1%;
+				width: 400px;
+				height: 450px;
+				overflow-y: auto;
+				background: #000;
+				padding: 5px;
+			}
+		
+			#report-box .IO {
+				color: #ffff00;
+			}
+			
+			#report-box .EUROPA {
+				color: #fff;
+			}
+			
+			#report-box .GANYMEDE {
+				color: #00ff00;
+			}
+		
+			#report-box .CALLISTO {
+				color: #d0a888;
+			}
+		
 			#info-box {
 				position: absolute;
 				left: 1%;
@@ -78,6 +105,10 @@
 			
 		</div>
 	
+		<div id="report-box">
+			
+		</div>
+	
 		<div id="info-box">
 			<div id="pausar-tempo">Restart time</div>
 			<div id="speed-icr">0.0006945</div>
@@ -103,7 +134,7 @@
 			
 			var objectName = "";
 			
-			/* 
+			/*
 				2451544.5 - Jan 1 2000
 				2461875.5 - April 13 2028
 				2462240.5 - April 13 2029
@@ -157,7 +188,18 @@
 					});
 				});
 			});
+			
+			function formatDate (d) {
+				return ("0" + d.getDate()).slice(-2) + "-" + ("0"+(d.getMonth()+1)).slice(-2) + "-" + d.getFullYear() + " " + ("0" + d.getHours()).slice(-2) + ":" + ("0" + d.getMinutes()).slice(-2);
+			}
 
+			function reportTransitEvent (data) {
+				var str = data.name + " " + data.state;
+				var date = formatDate(ON_DAED.ASTRO.getDateFromJulian(data.date));
+				var el = document.getElementById('report-box');
+				el.innerHTML = "<div class='" + data.name + "'>" + str + " on " + date + "</div>" + el.innerHTML;
+			}
+			
 			var smallerTimeStep = document.getElementById('speed-icr').innerHTML;
 			var longerTimeStep = parseFloat(smallerTimeStep) * 60;
 			
@@ -277,9 +319,14 @@
 					};
 					
 					inputBindings();
-					solarSystemFramework.setCameraOnEarthAtJupiter(o501, o502, o503, o504);
+					var cameraOnEarthAtJupiter = solarSystemFramework.setCameraOnEarthAtJupiter(o501, o502, o503, o504);
+					cameraOnEarthAtJupiter.collisionPlane.setReportCallback(reportTransitEvent);
 					ready();
 					document.body.removeChild(document.getElementById('loading-screen'));
+					
+					window.setTimeout(function() {
+						document.getElementById('report-box').innerHTML = "";
+					}, 500);
 				}
 			}, 100);
 			

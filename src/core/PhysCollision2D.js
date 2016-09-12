@@ -13,23 +13,37 @@ PhysCollision2D.prototype = Object.create(THREE.Object3D.prototype);
 
 PhysCollision2D.prototype.constructor = PhysCollision2D;
 
-PhysCollision2D.prototype.STATES = {
-	OC: 1,
-	SB: 2,
-	TR: 3,
-	EC: 4
-};
-
 (function(){
 
-	var physFramework = null;
+	var STATES = PhysCollision2D.prototype.STATES = {
+		EOC: "Entered OC",
+		LOC: "Left OC",
+		SB: "SB",
+		TR: "TR",
+		EEC: "Entered EC",
+		LEC: "Left EC"
+	};
 
+	var physFramework = null;
+	var reportCallback = null;
+	var epochDate = null;
+	
 	function changeState (R, r, stateObject, vector) {
 		var distObject = Math.sqrt(vector.x * vector.x + vector.y * vector.y) + r;
-		if(distObject <= R) {
-			stateObject.state = vector.z < 0 ? this.STATES.OC : this.STATES.TR;
+		if(distObject <= R && distObject !== 0) {
+			var oldState = stateObject.state;
+			stateObject.state = vector.z < 0 ? STATES.EOC : STATES.EEC;
 			if(physFramework !== null) {
-				stateObject.date = physFramework._accTime;
+				stateObject.date = epochDate + physFramework._accTime;
+			}
+			
+			if(reportCallback instanceof Function && oldState !== stateObject.state) {
+				reportCallback(stateObject);
+			}
+		} else if (stateObject.state === STATES.EOC || stateObject.state === STATES.EEC) {
+			stateObject.state = stateObject.state === STATES.EOC ? STATES.LOC : STATES.LEC;
+			if(reportCallback instanceof Function) {
+				reportCallback(stateObject);
 			}
 		}
 	}
@@ -55,11 +69,21 @@ PhysCollision2D.prototype.STATES = {
 		}
 	};
 
+	PhysCollision2D.prototype.setEpochDate = function setEpochDate(ed) {
+		epochDate = ed;
+	};
+	
 	PhysCollision2D.prototype.setPhysFramework = function setPhysFramework (fw) {
 		if(fw instanceof PhysFramework) {
 			physFramework = this._physFramework = fw;
 		} else {
 			physFramework = this._physFramework = null;
+		}
+	};
+	
+	PhysCollision2D.prototype.setReportCallback = function(rc) {
+		if(rc instanceof Function) {
+			reportCallback = rc;
 		}
 	};
 	

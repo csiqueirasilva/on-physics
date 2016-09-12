@@ -378,13 +378,18 @@ function PhysSolarSystem (imgPath) {
 		collisionPlane.addObject("Callisto", Callisto);
 		
 		collisionPlane.setPhysFramework(this.physFramework);
-
+		collisionPlane.setEpochDate(this._epochDate);
+		
 		this.setCameraAtObject(3, 5, function(earth, jupiter) {
 			coordsWrapper.setUpdateVector(0, 0, framework.timeInterval / 25);
 			collisionPlane.update();
 		});
 		
 		solarSystemFramework.setCameraFOV(0.35);
+		
+		return {
+			collisionPlane: collisionPlane
+		};
 	};
 	
 	PhysSolarSystem.prototype.setCameraFOV = function setCameraFOV (val) {
