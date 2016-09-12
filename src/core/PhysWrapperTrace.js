@@ -6,7 +6,7 @@ var PhysWrapperTrace = (function() {
 		this._updateVector = new THREE.Vector3();
 		this._updateVector.set(x, y, z);
 		
-		this.add(MathHelper.buildAxes(10000));
+//		this.add(MathHelper.buildAxes(10000));
 	}
 	
 	PhysWrapperTrace.prototype = Object.create(THREE.Object3D.prototype);
@@ -57,8 +57,8 @@ var PhysWrapperTrace = (function() {
 			this.updateMatrixWorld();
 			obj.updateMatrixWorld();
 			
-			var pos = this.worldToLocal(obj.position);
-			pos.multiplyScalar(0.9999); // against z-fighting
+			var pos = this.worldToLocal(obj.position.clone());
+			pos.multiplyScalar(0.9995); // against z-fighting
 			
 			if(!traceGeo.vertices[traceGeo.vertices.length - 1].equals(pos)) {
 				for (var j = 0; j < traceGeo.vertices.length - 1; j++) {

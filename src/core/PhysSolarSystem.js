@@ -321,7 +321,7 @@ function PhysSolarSystem (imgPath) {
 			this.physFramework._callbackRender = function () {
 				srcObj.visible = false;
 				srcObj._trace.trace.visible = false;
-				//this.mainCamera.position.copy(srcObj.position);
+				this.mainCamera.position.copy(srcObj.position);
 				this.mainControls.target.copy(dstObj.position);
 				if(cb instanceof Function) {
 					cb(srcObj, dstObj);
@@ -345,6 +345,7 @@ function PhysSolarSystem (imgPath) {
 		var refIO = new THREE.Object3D();
 		
 		var jupiter = this._objects[5];
+		var earth = this._objects[3];
 		
 		jupiter.add(coordsWrapper);
 		jupiter._sphere.material.color.setHex(0xffe066);
@@ -369,12 +370,18 @@ function PhysSolarSystem (imgPath) {
 		
 		coordsWrapper.startTracingLines();
 
+		var collisionPlane = new PhysCollision2D(earth, jupiter);
+		
+		collisionPlane.addObject("IO", IO);
+		collisionPlane.addObject("Europa", Europa);
+		collisionPlane.addObject("Ganymede", Ganymede);
+		collisionPlane.addObject("Callisto", Callisto);
+		
+		collisionPlane.setPhysFramework(this.physFramework);
+
 		this.setCameraAtObject(3, 5, function(earth, jupiter) {
-			earth.updateMatrixWorld();
-			jupiter.updateMatrixWorld();
-			var pos = earth.position.clone();
-			var finalPos = jupiter.worldToLocal(pos);
 			coordsWrapper.setUpdateVector(0, 0, framework.timeInterval / 25);
+			collisionPlane.update();
 		});
 		
 		solarSystemFramework.setCameraFOV(0.35);
