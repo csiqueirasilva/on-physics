@@ -321,7 +321,7 @@ function PhysSolarSystem (imgPath) {
 			this.physFramework._callbackRender = function () {
 				srcObj.visible = false;
 				srcObj._trace.trace.visible = false;
-				this.mainCamera.position.copy(srcObj.position);
+				//this.mainCamera.position.copy(srcObj.position);
 				this.mainControls.target.copy(dstObj.position);
 				if(cb instanceof Function) {
 					cb(srcObj, dstObj);
@@ -338,7 +338,9 @@ function PhysSolarSystem (imgPath) {
 			}
 		}
 
-		var coordsWrapper = MathHelper.buildAxes(10000);
+		var framework = this.physFramework;
+		
+		var coordsWrapper = new PhysWrapperTrace(1000, 0, 0, 0);
 		
 		var refIO = new THREE.Object3D();
 		
@@ -360,15 +362,22 @@ function PhysSolarSystem (imgPath) {
 		Ganymede.swapToSphere();
 		Callisto.swapToSphere();
 		
+		coordsWrapper.addTracingLine(IO, IO._sphere.material.color.getHex());
+		coordsWrapper.addTracingLine(Europa, Europa._sphere.material.color.getHex());
+		coordsWrapper.addTracingLine(Ganymede, Ganymede._sphere.material.color.getHex());
+		coordsWrapper.addTracingLine(Callisto, Callisto._sphere.material.color.getHex());
+		
+		coordsWrapper.startTracingLines();
+
 		this.setCameraAtObject(3, 5, function(earth, jupiter) {
 			earth.updateMatrixWorld();
 			jupiter.updateMatrixWorld();
 			var pos = earth.position.clone();
 			var finalPos = jupiter.worldToLocal(pos);
-			//coordsWrapper.lookAt(finalPos);
+			coordsWrapper.setUpdateVector(0, 0, framework.timeInterval / 25);
 		});
 		
-		solarSystemFramework.setCameraFOV(0.25);
+		solarSystemFramework.setCameraFOV(0.35);
 	};
 	
 	PhysSolarSystem.prototype.setCameraFOV = function setCameraFOV (val) {
