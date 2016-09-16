@@ -242,15 +242,15 @@ function PhysSolarSystem (imgPath) {
 			
 			for(var i = 0; i < results.length; i++) {
 			
-				var m = parseFloat(results[i].mass),
-					a = parseFloat(results[i].a),
-					e = parseFloat(results[i].ec),
-					I = parseFloat(results[i].in),
-					peri = parseFloat(results[i].w),
-					node = parseFloat(results[i].om),
-					M = parseFloat(results[i].ma),
+				var m = results[i].mass,
+					a = results[i].a,
+					e = results[i].ec,
+					I = results[i].in,
+					peri = results[i].w,
+					node = results[i].om,
+					M = results[i].ma,
 					name = results[i].name,
-					r = parseFloat(results[i].radius);
+					r = results[i].radius;
 				
 				var object = this.physFramework.addObjectFromKepler(
 						m,
@@ -288,18 +288,15 @@ function PhysSolarSystem (imgPath) {
 			var r = results.radius || (EARTH_RADIUS * 2.2284950230277819046204130144109e-5); // defaults to apophis' radius
 			var m = results.mass || 3.966817496229261e-28;//(EARTH_MASS * 4.519E-15); // defaults to apophis' mass
 			
-			r = parseFloat(r);
-			m = parseFloat(m);
-			
 			// temp constants
 			body = this.physFramework.addObjectFromKepler(
 				m, r, data.color || 0xFF0000, 
-				parseFloat(results.a),
-				parseFloat(results.ec), 
-				parseFloat(results.in), 
-				parseFloat(results.w), 
-				parseFloat(results.om), 
-				parseFloat(results.ma)
+				results.a,
+				results.ec, 
+				results.in, 
+				results.w, 
+				results.om, 
+				results.ma
 			);
 
 			this.physFramework.addTracingLine(body, 2000);
@@ -351,7 +348,7 @@ function PhysSolarSystem (imgPath) {
 		jupiter._sphere.material.color.setHex(0xffe066);
 		jupiter._trace.trace.visible = false;
 
-		var viewScalar = 15;
+		var viewScalar = 1;
 		
 		IO.scale.multiplyScalar(viewScalar);
 		Europa.scale.multiplyScalar(viewScalar);
@@ -385,7 +382,7 @@ function PhysSolarSystem (imgPath) {
 			collisionPlane.update();
 		});
 		
-		solarSystemFramework.setCameraFOV(0.35);
+		solarSystemFramework.setCameraFOV(0.035);
 		
 		return {
 			collisionPlane: collisionPlane
@@ -422,8 +419,6 @@ function PhysSolarSystem (imgPath) {
 	
 		var createdJob = false;
 	
-		console.log(lastFetchJD, JD);
-	
 		if(lastFetchJD !== JD && count === 0) {
 		
 			count = 1;
@@ -446,12 +441,12 @@ function PhysSolarSystem (imgPath) {
 				var object = earth;
 			
 				object._physElement.fromKepler(object._physElement._mass, object._physElement._radius, 
-					parseFloat(results.a),
-					parseFloat(results.ec), 
-					parseFloat(results.in), 
-					parseFloat(results.w), 
-					parseFloat(results.om), 
-					parseFloat(results.ma));
+					results.a,
+					results.ec, 
+					results.in, 
+					results.w, 
+					results.om, 
+					results.ma);
 
 				window.setTimeout(function() {
 						
@@ -460,13 +455,15 @@ function PhysSolarSystem (imgPath) {
 						var results = data.results[0];
 						var object = jupiter;
 					
+						debugger;
+					
 						object._physElement.fromKepler(object._physElement._mass, object._physElement._radius, 
-							parseFloat(results.a),
-							parseFloat(results.ec), 
-							parseFloat(results.in), 
-							parseFloat(results.w), 
-							parseFloat(results.om), 
-							parseFloat(results.ma));
+							results.a,
+							results.ec, 
+							results.in, 
+							results.w, 
+							results.om, 
+							results.ma);
 					
 						window.setTimeout(function() {
 					
@@ -476,12 +473,12 @@ function PhysSolarSystem (imgPath) {
 								var object = IO;
 							
 								object._physElement.fromKepler(object._physElement._mass, object._physElement._radius, 
-									parseFloat(results.a),
-									parseFloat(results.ec), 
-									parseFloat(results.in), 
-									parseFloat(results.w), 
-									parseFloat(results.om), 
-									parseFloat(results.ma));
+									results.a,
+									results.ec, 
+									results.in, 
+									results.w, 
+									results.om, 
+									results.ma);
 								
 								object._physElement.exportPosition(object.position);
 								
@@ -492,12 +489,12 @@ function PhysSolarSystem (imgPath) {
 										var object = Europa;
 									
 										object._physElement.fromKepler(object._physElement._mass, object._physElement._radius, 
-											parseFloat(results.a),
-											parseFloat(results.ec), 
-											parseFloat(results.in), 
-											parseFloat(results.w), 
-											parseFloat(results.om), 
-											parseFloat(results.ma));
+											results.a,
+											results.ec, 
+											results.in, 
+											results.w, 
+											results.om, 
+											results.ma);
 										
 										object._physElement.exportPosition(object.position);
 										
@@ -509,12 +506,12 @@ function PhysSolarSystem (imgPath) {
 												var object = Ganymede;
 											
 												object._physElement.fromKepler(object._physElement._mass, object._physElement._radius, 
-													parseFloat(results.a),
-													parseFloat(results.ec), 
-													parseFloat(results.in), 
-													parseFloat(results.w), 
-													parseFloat(results.om), 
-													parseFloat(results.ma));
+													results.a,
+													results.ec, 
+													results.in, 
+													results.w, 
+													results.om, 
+													results.ma);
 											
 												object._physElement.exportPosition(object.position);
 											
@@ -525,12 +522,12 @@ function PhysSolarSystem (imgPath) {
 														var object = Callisto;
 													
 														object._physElement.fromKepler(object._physElement._mass, object._physElement._radius, 
-															parseFloat(results.a),
-															parseFloat(results.ec), 
-															parseFloat(results.in), 
-															parseFloat(results.w), 
-															parseFloat(results.om), 
-															parseFloat(results.ma));
+															results.a,
+															results.ec, 
+															results.in, 
+															results.w, 
+															results.om, 
+															results.ma);
 														
 														object._physElement.exportPosition(object.position);
 														

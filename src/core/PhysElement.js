@@ -8,11 +8,14 @@ function PhysElement () {
 }
 
 (function () {
-	var ACCEL_PRECISION = 1E16;
-	var k = 0.01720209895; // gaussian gravitational constant
-	//var GRAVITIONAL_CONSTANT = k * k /* AU^3 * day^-2 * sunMass^-1 */;
-	var GRAVITIONAL_CONSTANT = 2.9591230378107436E-04; // GM from NASA horizons;
 	
+	Decimal.config({precision: 17});
+	
+	//var ACCEL_PRECISION = 1E16;
+	//var k = 0.01720209895; // gaussian gravitational constant
+	//var GRAVITIONAL_CONSTANT = k * k /* AU^3 * day^-2 * sunMass^-1 */;
+	var GRAVITIONAL_CONSTANT = Decimal("2.9591230378107436E-04"); // GM from NASA horizons;
+
 	PhysElement.prototype.applyGravity = function applyGravity (physElement) {
 		var vec = null;
 		
@@ -63,48 +66,53 @@ function PhysElement () {
 			this._accel.x = this._accel.y = this._accel.z = 0;
 		}
 	};
-	
+
 	PhysElement.prototype.exportPosition = function exportPosition (e) {
 		e.x = this._position.x;
 		e.y = this._position.y;
 		e.z = this._position.z;
 	};
 
+	PhysElement.prototype.exportPosition = PhysElement.prototype.flushAccel = PhysElement.prototype.applyGravity = function(){};
+	
 	/* SRC: http://www.jgiesen.de/kepler/kepler.html */
 	function EccAnom(ec,m,dp) {
 		// arguments:
 		// ec=eccentricity, m=mean anomaly,
 		// dp=number of decimal places
-		var pi=Math.PI, K=pi/180.0;
+		var pi = getDecimalPI(), K = pi.div("180");
 
-		m *= (180 / Math.PI); // to degree
+		m = m.toDegree(); // to degree
 		
-		var maxIter=30, i=0;
+		var maxIter = 30, i = 0;
 
-		var delta=Math.pow(10,-dp);
+		var delta = Decimal("10").toPower(Decimal(-dp));
 
 		var E, F;
 
-		m=m/360.0;
+		m = m.div(Decimal("360"));
 
-		m=2.0*pi*(m-Math.floor(m));
+		m = m.sub(m.floor()).multFullCircle();
 
-		if (ec<0.8) E=m; else E=pi;
+		if (ec.lt(Decimal("0.8"))) E = m; else E = pi;
 
-		F = E - ec*Math.sin(m) - m;
+		F = E.sub(ec.mul(m.sin())).sub(m);
+		
+		var One = Decimal("1");
+		
+		while (F.abs().gt(delta) && (i<maxIter)) {
 
-		while ((Math.abs(F)>delta) && (i<maxIter)) {
+			E = E.sub( F.div( One.sub( ec.mul(E.cos()) ) ) );
 
-			E = E - F/(1.0-ec*Math.cos(E));
-			F = E - ec*Math.sin(E) - m;
+			F = E.sub( ec.mul(E.sin()) ).sub(m);
 
 			i = i + 1;
-
+		
 		}
 
-		E=E/K;
+		E = E.div(K);
 
-		return Math.round(E*Math.pow(10,dp))/Math.pow(10,dp) * (Math.PI / 180);
+		return E.toRad();
 	}
 	
 	// Oliver Montenbruck, Thomas Pfleger - Astronomy on the Personal Computer, Position in the Orbit
@@ -112,82 +120,52 @@ function PhysElement () {
 	function HyperEccAnom(ECC, MH) {
 		
 		var MAXIT = 15;
-		var EPS = 1E-10;
+		var EPS = Decimal("1E-10");
 		
-		var H = Math.log(2 * Math.abs(MH) / ECC + 1.8);
-		if(MH < 0) H = -H;
-		var SINHH = sinh(H);
-		var COSHH = cosh(H);
-		var F = ECC * SINHH - H - MH;
+		var H = ((Decimal("2").mul(MH.abs()).div(ECC)).add(Decimal("1.8"))).ln();
+		
+		if(MH.lt(Decimal("0"))) H = H.neg();
+
+		var SINHH = H.sinh();
+		var COSHH = H.cosh();
+		var F = (ECC.mul(SINHH)).sub(H).sub(MH);
 		var I = 0;
-		while( (Math.abs(F) > EPS * (1 + Math.abs(H + MH))) && (I < MAXIT) ) {
-			H = H - F / (ECC * COSHH - 1);
-			SINHH = sinh(H);
-			COSHH = cosh(H);
-			F = ECC * SINHH - H - MH;
+		var One = Decimal("1");
+		while( (F.abs().gt(EPS.mul(One.add((H.add(MH)).abs()))) && (I < MAXIT)) ) {
+			H = H.sub(F.div((ECC.mul(COSHH)).sub(One)));
+			SINHH = H.sinh();
+			COSHH = H.cosh();
+			F = (ECC.mul(SINHH)).sub(H).sub(MH);
 			I++;
 		}
 		
 		return H;
-		
-	}
-	
-	function R1 (angle) {
-		return [
-			1, 0, 0,
-			0, Math.cos(angle), -Math.sin(angle),
-			0, Math.sin(angle), Math.cos(angle)
-		];
-	}
-
-	function R3 (angle) {
-		return [
-			Math.cos(angle), -Math.sin(angle), 0,
-			Math.sin(angle), Math.cos(angle), 0,
-			0, 0, 1
-		];
-	}
-	
-	function multMat3x3(m1, m2) {
-	
-		var ret = [];
-		
-		for(var i = 0; i < 3; i++) {
-			for(var j = 0; j < 3; j++) {
-				var line = i * 3;
-				ret[j + line] = m1[line] * m2[j] + m1[line + 1] * m2[j + 3] + m1[line + 2] * m2[j + 6];
-			}
-		}
-	
-		return ret; 
-	}
-	
-	function multMatVet(m, v) {
-		var ret = [];
-		
-		for(var j = 0; j < 3; j++) {
-			var line = j * 3;
-			ret[j] = m[line] * v[0] + m[line + 1] * v[1] + m[line + 2] * v[2];
-		}
-		
-		return ret;
 	}
 	
 	// http://ssd.jpl.nasa.gov/txt/aprx_pos_planets.pdf
 	function keplerToCartesianMultMat(I, w, Omega, x, y) {
-		return [
-			(Math.cos(w) * Math.cos(Omega) - Math.sin(w) * Math.sin(Omega) * Math.cos(I)) * x + (-Math.sin(w) * Math.cos(Omega) - Math.cos(w) * Math.sin(Omega) * Math.cos(I)) * y,
-			(Math.cos(w) * Math.sin(Omega) + Math.sin(w) * Math.cos(Omega) * Math.cos(I)) * x + (-Math.sin(w) * Math.sin(Omega) + Math.cos(w) * Math.cos(Omega) * Math.cos(I)) * y,
-			(Math.sin(w) * Math.sin(I)) * x + (Math.cos(w) * Math.sin(I)) * y
-		];
-	}
-
-	function sinh (x) {
-		return (Math.pow(Math.E, x) - Math.pow(Math.E, -x))/2;
-	}
-
-	function cosh (x) {
-		return (Math.pow(Math.E, x) + Math.pow(Math.E, -x))/2;
+	
+		var cosW = w.cos(),
+			sinW = w.sin(),
+		
+			cosOmega = Omega.cos(),
+			sinOmega = Omega.sin(),
+		
+			cosI = I.cos(),
+			sinI = I.sin(),
+			
+			sinWNeg = sinW.neg(),
+			cosWNeg = cosW.neg(),
+			
+			retX = x.mul(cosW.mul(cosOmega).sub(sinW.mul(sinOmega).mul(cosI))).add(
+				   y.mul(sinWNeg.mul(cosOmega).sub(cosW.mul(sinOmega).mul(cosI)))			
+			),
+			retY = x.mul(cosW.mul(sinOmega).add(sinW.mul(cosOmega).mul(cosI))).add(
+				   y.mul(sinWNeg.mul(sinOmega).add(cosW.mul(cosOmega).mul(cosI)))
+			),
+			retZ = x.mul(sinW.mul(sinI)).add(y.mul(cosW.mul(sinI)));
+	
+		return [retX, retY, retZ];
 	}
 	
 	function keplerToCartesian(a, e, I, w, Omega, M) {
@@ -210,38 +188,39 @@ function PhysElement () {
 	
 		var q = []; 
 		var qDash = [];
+		var One = Decimal("1");
+		var Zero = Decimal("0");
 		
-		if(e > 1) {
+		if(e.gt(One)) {
 			
 			E = HyperEccAnom(e, M);
 		
-			var absA = Math.abs(a);
-			var sinhH = sinh(E);
-			var coshH = cosh(E);
+			var absA = a.abs();
+			var sinhH = E.sinh();
+			var coshH = E.cosh();
 		
-			q[0] = absA * (e - coshH);
-			q[1] = absA * Math.sqrt(e * e - 1) * sinhH;
-			q[2] = 0;
+			q[0] = absA.mul(e.sub(coshH));
+			q[1] = absA.mul((e.mul(e).sub(One)).sqrt().mul(sinhH));
+			q[2] = Zero;
 			
-			qDash[0] = -Math.sqrt(GRAVITIONAL_CONSTANT / absA) * (sinhH / (e * coshH - 1));
-			qDash[1] =  Math.sqrt((GRAVITIONAL_CONSTANT * (e * e - 1)) / absA) * (coshH / (e * coshH - 1));
-			qDash[2] = 0;
-		} else if (e === 1) {
-		} else {
+			qDash[0] = GRAVITIONAL_CONSTANT.div(absA).sqrt().neg().mul(sinhH.div(e.mul(coshH.sub(One))));
+			qDash[1] = GRAVITIONAL_CONSTANT.mul(e.mul(e).sub(One)).div(absA).sqrt().mul(coshH.div(e.mul(coshH).sub(One)));
+			qDash[2] = Zero;
+		} else /* fits e === 1 (parabolla) too */ {
 		
 			E = EccAnom(e, M, 15);
 		
-			q[0] = a * (Math.cos(E) - e);
-			q[1] = a * Math.sqrt(1 - e * e) * Math.sin(E);
-			q[2] = 0;
+			q[0] = a.mul((E.cos().sub(e)));
+			q[1] = a.mul(One.sub(e.mul(e)).sqrt()).mul(E.sin());
+			q[2] = Zero;
 			
-			var qDashXScalar = -Math.sqrt(GRAVITIONAL_CONSTANT / a);
-			var qDashYScalar = Math.sqrt((GRAVITIONAL_CONSTANT * (1 - e * e)) / a);
-			var qDashDiv = (1 - e * Math.cos(E));
+			var qDashXScalar = GRAVITIONAL_CONSTANT.div(a).sqrt().neg();
+			var qDashYScalar = GRAVITIONAL_CONSTANT.mul( One.sub( e.mul(e) ) ).div(a).sqrt();
+			var qDashDiv = One.sub(e.mul(E.cos()));
 			
-			qDash[0] = qDashXScalar * (Math.sin(E) / qDashDiv);
-			qDash[1] = qDashYScalar * (Math.cos(E) / qDashDiv);
-			qDash[2] = 0;
+			qDash[0] = qDashXScalar.mul(E.sin().div(qDashDiv));
+			qDash[1] = qDashYScalar.mul(E.cos().div(qDashDiv));
+			qDash[2] = Zero;
 		}
 		
 		var r = keplerToCartesianMultMat(I, w, Omega, q[0], q[1]);
@@ -259,14 +238,6 @@ function PhysElement () {
 				z: rDash[2]
 			}
 		};
-	}
-	
-	// for debugging with https://janus.astro.umd.edu/orbits/elements/convertframe.html
-	function keplerToCartesianDimensionless(a, e, I, w, Omega, M) {
-		// Uses GM = 1
-		var n = Math.sqrt(1 / (a * a * a));
-		var rad = Math.PI / 180;
-		return keplerToCartesian(a, e, I * rad, w * rad, Omega * rad, M * rad, n);
 	}
 	
 	PhysElement.prototype.fromKepler = function fromKepler (mass, radius, a, e, I, w, Omega, M) {
@@ -288,9 +259,7 @@ function PhysElement () {
 		this._mass = mass;
 		this._radius = radius;
 		
-		var rad = Math.PI / 180;
-		
-		var cartesianProperties = keplerToCartesian(a, e, I * rad, w * rad, Omega * rad, M * rad);
+		var cartesianProperties = keplerToCartesian(Decimal(a), Decimal(e), Decimal(I).toRad(), Decimal(w).toRad(), Decimal(Omega).toRad(), Decimal(M).toRad());
 		
 		this._speed = cartesianProperties.speed;
 		this._position = cartesianProperties.position;

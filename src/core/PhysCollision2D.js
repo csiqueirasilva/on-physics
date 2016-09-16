@@ -16,12 +16,12 @@ PhysCollision2D.prototype.constructor = PhysCollision2D;
 (function(){
 
 	var STATES = PhysCollision2D.prototype.STATES = {
-		EOC: "Entered OC",
-		LOC: "Left OC",
+		EOC: "disappeared",
+		LOC: "reappeared",
 		SB: "SB",
 		TR: "TR",
-		EEC: "Entered EC",
-		LEC: "Left EC"
+		EEC: "immersed",
+		LEC: "emersed"
 	};
 
 	var physFramework = null;
@@ -29,8 +29,8 @@ PhysCollision2D.prototype.constructor = PhysCollision2D;
 	var epochDate = null;
 	
 	function changeState (R, r, stateObject, vector) {
-		var distObject = Math.sqrt(vector.x * vector.x + vector.y * vector.y) + r;
-		if(distObject <= R && distObject !== 0) {
+		var distObject = Math.sqrt(vector.x * vector.x + vector.y * vector.y);
+		if((distObject + r) <= R) /* entered jupiter */ {
 			var oldState = stateObject.state;
 			stateObject.state = vector.z < 0 ? STATES.EOC : STATES.EEC;
 			if(physFramework !== null) {
@@ -40,7 +40,7 @@ PhysCollision2D.prototype.constructor = PhysCollision2D;
 			if(reportCallback instanceof Function && oldState !== stateObject.state) {
 				reportCallback(stateObject);
 			}
-		} else if (stateObject.state === STATES.EOC || stateObject.state === STATES.EEC) {
+		} else if ((distObject - r) <= R && (stateObject.state === STATES.EOC || stateObject.state === STATES.EEC)) {
 			stateObject.state = stateObject.state === STATES.EOC ? STATES.LOC : STATES.LEC;
 			if(reportCallback instanceof Function) {
 				reportCallback(stateObject);
