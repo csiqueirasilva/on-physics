@@ -8,7 +8,7 @@ function PhysElement () {
 }
 
 (function () {
-	var ACCEL_PRECISION = 1E16;
+
 	var k = 0.01720209895; // gaussian gravitational constant
 	//var GRAVITIONAL_CONSTANT = k * k /* AU^3 * day^-2 * sunMass^-1 */;
 	var GRAVITIONAL_CONSTANT = 2.9591230378107436E-04; // GM from NASA horizons;
@@ -41,10 +41,10 @@ function PhysElement () {
 		
 			var scalar = -(GRAVITIONAL_CONSTANT * M) / Math.pow(modVec, 3);
 			
-			b._accel.x += Math.round(vec.x * scalar * ACCEL_PRECISION) / ACCEL_PRECISION;
-			b._accel.y += Math.round(vec.y * scalar * ACCEL_PRECISION) / ACCEL_PRECISION;
-			b._accel.z += Math.round(vec.z * scalar * ACCEL_PRECISION) / ACCEL_PRECISION;
-	
+			b._accel.x += vec.x * scalar;
+			b._accel.y += vec.y * scalar;
+			b._accel.z += vec.z * scalar;
+			
 		}
 		
 		return vec;

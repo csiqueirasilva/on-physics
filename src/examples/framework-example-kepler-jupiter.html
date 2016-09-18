@@ -203,6 +203,8 @@
 			var smallerTimeStep = document.getElementById('speed-icr').innerHTML;
 			var longerTimeStep = parseFloat(smallerTimeStep) * 60;
 			
+			var lastT = 0;
+			
 			function inputBindings() {
 			
 				document.getElementById('pausar-tempo').onclick = function(ev) {
@@ -281,6 +283,12 @@
 						
 					e = document.getElementById('info-tempo');
 					e.innerHTML = "t = " + physFramework._accTime.toFixed(2) + " dias / " + (physFramework._accTime / 365.25).toFixed(2) + " anos" + "<br />" + stringDate;
+					
+					if(parseInt(physFramework._accTime) > lastT) {
+						lastT = parseInt(physFramework._accTime);
+						physFramework.timeInterval = 0;
+						document.getElementById('pausar-tempo').innerHTML = "Restart time";
+					} 
 					
 					if(fetchFromDatabase) {
 						updateFromDatabase();

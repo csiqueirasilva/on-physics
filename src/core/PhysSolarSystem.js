@@ -381,11 +381,13 @@ function PhysSolarSystem (imgPath) {
 		collisionPlane.setEpochDate(this._epochDate);
 		
 		this.setCameraAtObject(3, 5, function(earth, jupiter) {
-			coordsWrapper.setUpdateVector(0, 0, framework.timeInterval / 25);
+			coordsWrapper.setUpdateVector(0, 0, -framework.timeInterval / 25);
 			collisionPlane.update();
 		});
 		
 		solarSystemFramework.setCameraFOV(0.35);
+		
+		this.physFramework.mainCamera.up.set(0, 0, -1);
 		
 		return {
 			collisionPlane: collisionPlane
