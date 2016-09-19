@@ -5,7 +5,7 @@ var PhysWrapperTrace = (function() {
 		this._nVerts = maxVertices || 100;
 		this._updateVector = new THREE.Vector3();
 		this._updateVector.set(x, y, z);
-		
+		this._testLength = 0.00005;
 //		this.add(MathHelper.buildAxes(10000));
 	}
 	
@@ -45,6 +45,26 @@ var PhysWrapperTrace = (function() {
 		this._TRACES.push(trace);
 	};
 	
+	PhysWrapperTrace.prototype.initTrace = function initTrace() {
+		for(var i = 0; i < this._TRACES.length; i++) {
+			var traceGeo = this._TRACES[i].geometry;
+			var obj = this._TRACES[i]._worldObject;
+			
+			this.updateMatrixWorld();
+			obj.updateMatrixWorld();
+
+			var pos = this.worldToLocal(obj.position.clone());
+			pos.multiplyScalar(0.9995); // against z-fighting
+			
+			for (var j = 0; j < traceGeo.vertices.length; j++) {
+				traceGeo.vertices[j].copy(pos);
+			}
+			
+			traceGeo.computeLineDistances();
+			traceGeo.verticesNeedUpdate = true;
+		}
+	};
+	
 	PhysWrapperTrace.prototype.updateTrace = function updateTrace() {
 		
 		this.position.add(this._updateVector);
@@ -60,7 +80,7 @@ var PhysWrapperTrace = (function() {
 			var pos = this.worldToLocal(obj.position.clone());
 			pos.multiplyScalar(0.9995); // against z-fighting
 			
-			if(!traceGeo.vertices[traceGeo.vertices.length - 1].equals(pos)) {
+			if(traceGeo.vertices[traceGeo.vertices.length - 1].clone().add(pos.clone().multiplyScalar(-1)).length() >= this._testLength) {
 				for (var j = 0; j < traceGeo.vertices.length - 1; j++) {
 					traceGeo.vertices[j].copy(traceGeo.vertices[j + 1]);
 				}

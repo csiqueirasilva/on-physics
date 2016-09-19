@@ -317,12 +317,15 @@ function PhysSolarSystem (imgPath) {
 		var dstObj = this._objects[dst];
 		if(srcObj && dstObj) {
 			this.physFramework.mainCamera.position.copy(srcObj.position);
-		
+			window.GLOBAL_VER = false;
+			
 			this.physFramework._callbackRender = function () {
 				srcObj.visible = false;
 				srcObj._trace.trace.visible = false;
+				
 				this.mainCamera.position.copy(srcObj.position);
 				this.mainControls.target.copy(dstObj.position);
+				
 				if(cb instanceof Function) {
 					cb(srcObj, dstObj);
 				}
@@ -351,7 +354,7 @@ function PhysSolarSystem (imgPath) {
 		jupiter._sphere.material.color.setHex(0xffe066);
 		jupiter._trace.trace.visible = false;
 
-		var viewScalar = 15;
+		var viewScalar = 1;
 		
 		IO.scale.multiplyScalar(viewScalar);
 		Europa.scale.multiplyScalar(viewScalar);
@@ -367,9 +370,12 @@ function PhysSolarSystem (imgPath) {
 		coordsWrapper.addTracingLine(Europa, Europa._sphere.material.color.getHex());
 		coordsWrapper.addTracingLine(Ganymede, Ganymede._sphere.material.color.getHex());
 		coordsWrapper.addTracingLine(Callisto, Callisto._sphere.material.color.getHex());
-		
-		coordsWrapper.startTracingLines();
 
+		var updateTracingLines = 25;
+		var factUpdateTracingLines = 100 / updateTracingLines;
+		
+		coordsWrapper.startTracingLines(15);
+		
 		var collisionPlane = new PhysCollision2D(earth, jupiter);
 		
 		collisionPlane.addObject("IO", IO);
@@ -381,16 +387,17 @@ function PhysSolarSystem (imgPath) {
 		collisionPlane.setEpochDate(this._epochDate);
 		
 		this.setCameraAtObject(3, 5, function(earth, jupiter) {
-			coordsWrapper.setUpdateVector(0, 0, -framework.timeInterval / 25);
+			coordsWrapper.setUpdateVector(0, 0, (-framework.timeInterval / 25) / factUpdateTracingLines);
 			collisionPlane.update();
 		});
 		
-		solarSystemFramework.setCameraFOV(0.35);
+		solarSystemFramework.setCameraFOV(0.05);
 		
 		this.physFramework.mainCamera.up.set(0, 0, -1);
 		
 		return {
-			collisionPlane: collisionPlane
+			collisionPlane: collisionPlane,
+			coordsWrapper: coordsWrapper
 		};
 	};
 	

@@ -1,6 +1,6 @@
 function PhysCollision2D (src, dst) {
 	THREE.Object3D.apply(this, arguments);
-	this.add(MathHelper.buildAxes(1000));
+	//this.add(MathHelper.buildAxes(1000));
 	this._src = src;
 	this._dst = dst;
 	this._physFramework = null;
@@ -16,12 +16,12 @@ PhysCollision2D.prototype.constructor = PhysCollision2D;
 (function(){
 
 	var STATES = PhysCollision2D.prototype.STATES = {
-		EOC: "Entered OC",
-		LOC: "Left OC",
+		EOC: "disappeared",
+		LOC: "reappeared",
 		SB: "SB",
 		TR: "TR",
-		EEC: "Entered EC",
-		LEC: "Left EC"
+		EEC: "immersed",
+		LEC: "emmersed"
 	};
 
 	var physFramework = null;
@@ -29,7 +29,7 @@ PhysCollision2D.prototype.constructor = PhysCollision2D;
 	var epochDate = null;
 	
 	function changeState (R, r, stateObject, vector) {
-		var distObject = Math.sqrt(vector.x * vector.x + vector.y * vector.y) + r;
+		var distObject = Math.sqrt(vector.x * vector.x + vector.y * vector.y) - r;
 		if(distObject <= R && distObject !== 0) {
 			var oldState = stateObject.state;
 			stateObject.state = vector.z < 0 ? STATES.EOC : STATES.EEC;
