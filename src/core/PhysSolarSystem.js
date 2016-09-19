@@ -401,6 +401,10 @@ function PhysSolarSystem (imgPath) {
 		};
 	};
 	
+	PhysSolarSystem.prototype.getCameraFOV = function getCameraFOV () {
+		return this.physFramework.mainCamera.fov;
+	};
+	
 	PhysSolarSystem.prototype.setCameraFOV = function setCameraFOV (val) {
 		this.physFramework.mainCamera.fov = val;
 		this.physFramework.mainCamera.updateProjectionMatrix();

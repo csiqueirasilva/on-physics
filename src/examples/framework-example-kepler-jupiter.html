@@ -246,6 +246,40 @@
 				var closestDist = Infinity;
 				var closestDate = null;
 
+				/* SRC: http://stackoverflow.com/questions/14926366/mousewheel-event-in-modern-browsers */
+				var scrollItem = document.body;
+				var fov = solarSystemFramework.getCameraFOV();
+				var minFov = fov / 5;
+				var maxFov = fov * 8;
+				
+				if (scrollItem.addEventListener)
+				{
+					// IE9, Chrome, Safari, Opera
+					scrollItem.addEventListener("mousewheel", MouseWheelHandler, false);
+					// Firefox
+					scrollItem.addEventListener("DOMMouseScroll", MouseWheelHandler, false);
+				}
+				// IE 6/7/8
+				else
+				{
+					scrollItem.attachEvent("onmousewheel", MouseWheelHandler);
+				}
+
+				function MouseWheelHandler(e)
+				{
+					// cross-browser wheel delta
+					var e = window.event || e; // old IE support
+					var delta = Math.max(-1, Math.min(1, (e.wheelDelta || -e.detail)));
+
+					fov += delta * -0.01;
+					fov = Math.max(fov, minFov);
+					fov = Math.min(fov, maxFov);
+					
+					solarSystemFramework.setCameraFOV(fov);
+					
+					return false;
+				}
+				
 				function formatNumber(n) {
 					return n.toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 				}
