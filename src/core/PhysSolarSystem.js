@@ -339,7 +339,7 @@ function PhysSolarSystem (imgPath) {
 		return UA_LIGHT_SEC * (this._objects[3].position.clone().sub(this._objects[5].position.clone())).length();
 	};
 	
-	PhysSolarSystem.prototype.setCameraOnEarthAtJupiter = function setCameraOnEarthAtJupiter (IO, Europa, Ganymede, Callisto) {
+	PhysSolarSystem.prototype.setCameraOnEarthAtJupiter = function setCameraOnEarthAtJupiter (IO, Europa, Ganymede, Callisto, reportCallback) {
 		for(var i = 0; i < (this._objects.length - 4); i++) {
 			if(i !== 5) {
 				this._objects[i].visible = false;
@@ -354,6 +354,7 @@ function PhysSolarSystem (imgPath) {
 		
 		var jupiter = this._objects[5];
 		var earth = this._objects[3];
+		var sun = this._objects[0];
 		
 		jupiter.add(coordsWrapper);
 		jupiter._sphere.material.color.setHex(0xffe066);
@@ -381,19 +382,97 @@ function PhysSolarSystem (imgPath) {
 		
 		coordsWrapper.startTracingLines(15);
 		
-		var collisionPlane = new PhysCollision2D(earth, jupiter);
+		var STATES_EARTH_JUPITER = {
+			EOC: "disappeared",
+			LOC: "reappeared",
+			ETR: "immersed",
+			LTR: "emmersed"
+		};
+
+		var STATES_SUN_JUPITER = {
+			EEC: "disappeared in Jupiter's shadow",
+			LEC: "reappeared from Jupiter's shadow",
+			ESB: "'s shadow immerses Jupiter's surface",
+			LSB: "'s shadow emmerses Jupiter's surface"
+		};
 		
-		collisionPlane.addObject("IO", IO);
-		collisionPlane.addObject("Europa", Europa);
-		collisionPlane.addObject("Ganymede", Ganymede);
-		collisionPlane.addObject("Callisto", Callisto);
+		var physFramework = this.physFramework;
+		var epochDate = this._epochDate;
+
+		function changeStateEarthJupiter (R, r, object, vector) {
+			var distObject = Math.sqrt(vector.x * vector.x + vector.y * vector.y) - r;
+			var stateObject = {date: epochDate + physFramework._accTime, name: object.name, state: object._earthPhysState2D};
+							   
+			if(distObject <= R && distObject !== 0) {
+				
+			   	var oldState = stateObject.state;
+				object._physState2D = stateObject.state = vector.z < 0 ? STATES_EARTH_JUPITER.EOC : STATES_EARTH_JUPITER.ETR;
+
+				if(reportCallback instanceof Function && oldState !== stateObject.state && object._sunPhysState2D !== STATES_SUN_JUPITER.EEC) {
+					reportCallback(stateObject);
+				}
+			
+			} else if (stateObject.state === STATES_EARTH_JUPITER.EOC || stateObject.state === STATES_EARTH_JUPITER.ETR) {
+				
+				stateObject.state = stateObject.state === STATES_EARTH_JUPITER.EOC ? STATES_EARTH_JUPITER.LOC : STATES_EARTH_JUPITER.LTR;
+				
+				if(reportCallback instanceof Function && object._sunPhysState2D !== STATES_SUN_JUPITER.EEC) {
+					reportCallback(stateObject);
+				}
+				
+			}
+			
+			object._earthPhysState2D = stateObject.state;
+		}
 		
-		collisionPlane.setPhysFramework(this.physFramework);
-		collisionPlane.setEpochDate(this._epochDate);
+		function changeStateSunJupiter (R, r, object, vector) {
+			var distObject = Math.sqrt(vector.x * vector.x + vector.y * vector.y) - r;
+			var stateObject = {date: epochDate + physFramework._accTime, name: object.name, state: object._sunPhysState2D};
+							   
+			if(distObject <= R && distObject !== 0) {
+				
+			   	var oldState = stateObject.state;
+				object._physState2D = stateObject.state = vector.z < 0 ? STATES_SUN_JUPITER.EEC : STATES_SUN_JUPITER.ESB;
+
+				if(reportCallback instanceof Function && oldState !== stateObject.state && object._earthPhysState2D !== STATES_EARTH_JUPITER.EOC) {
+					reportCallback(stateObject);
+				}
+			
+			} else if (stateObject.state === STATES_SUN_JUPITER.EEC || stateObject.state === STATES_SUN_JUPITER.ESB) {
+				
+				stateObject.state = stateObject.state === STATES_SUN_JUPITER.EEC ? STATES_SUN_JUPITER.LEC : STATES_SUN_JUPITER.LSB;
+				
+				if(reportCallback instanceof Function && object._earthPhysState2D !== STATES_EARTH_JUPITER.EOC) {
+					reportCallback(stateObject);
+				}
+				
+			}
+			
+			object._sunPhysState2D = stateObject.state;
+		}
+		
+		var collisionPlaneEarthJupiter = new PhysCollision2D(earth, jupiter);
+
+		collisionPlaneEarthJupiter.addObject("IO", IO);
+		collisionPlaneEarthJupiter.addObject("Europa", Europa);
+		collisionPlaneEarthJupiter.addObject("Ganymede", Ganymede);
+		collisionPlaneEarthJupiter.addObject("Callisto", Callisto);
+		
+		collisionPlaneEarthJupiter._changeState = changeStateEarthJupiter;
+
+		var collisionPlaneSunJupiter = new PhysCollision2D(sun, jupiter);
+
+		collisionPlaneSunJupiter.addObject("IO", IO);
+		collisionPlaneSunJupiter.addObject("Europa", Europa);
+		collisionPlaneSunJupiter.addObject("Ganymede", Ganymede);
+		collisionPlaneSunJupiter.addObject("Callisto", Callisto);
+		
+		collisionPlaneSunJupiter._changeState = changeStateSunJupiter;
 		
 		this.setCameraAtObject(3, 5, function(earth, jupiter) {
 			coordsWrapper.setUpdateVector(0, 0, (-framework.timeInterval / 25) / factUpdateTracingLines);
-			collisionPlane.update();
+			collisionPlaneEarthJupiter.update();
+			collisionPlaneSunJupiter.update();
 		});
 		
 		solarSystemFramework.setCameraFOV(0.05);
@@ -401,7 +480,8 @@ function PhysSolarSystem (imgPath) {
 		this.physFramework.mainCamera.up.set(0, 0, -1);
 		
 		return {
-			collisionPlane: collisionPlane,
+			collisionPlaneEarthJupiter: collisionPlaneEarthJupiter,
+			collisionPlaneSunJupiter: collisionPlaneSunJupiter,
 			coordsWrapper: coordsWrapper
 		};
 	};

@@ -145,9 +145,23 @@
 			var JD;
 			
 			do {
-				var dt = prompt("INPUT DATE (01-01-1980 <= DATE <= 31-12-2079):", "01-01-2016");
+				var dt;
+				
+				do {
+					dt = prompt("INPUT DATE (01-01-1980 <= DATE <= 31-12-2079):", "01-01-2016");
+				} while(dt == null || dt == "" );
+
 				var arr = dt.split("-");
-				JD = ON_DAED.ASTRO.getJulianFromGregorian(parseInt(arr[0]), parseInt(arr[1]), parseInt(arr[2]), 0, 0);
+				
+				var hr;
+				
+				do {
+					hr = prompt("INPUT HOUR (00:00):", "00:00");
+				} while(hr == null || hr == "" );
+				
+				var hrArr = hr.split(":");
+				
+				JD = ON_DAED.ASTRO.getJulianFromGregorian(parseInt(arr[0]), parseInt(arr[1]), parseInt(arr[2]), parseInt(hrArr[0]), parseInt(hrArr[1]));
 				console.log(JD);
 			} while (!JD || isNaN(JD) || JD < 2444240.0 || JD > 2480765.0);
 			
@@ -209,7 +223,7 @@
 			}
 			
 			var smallerTimeStep = document.getElementById('speed-icr').innerHTML;
-			var longerTimeStep = parseFloat(smallerTimeStep) / (60 * 1000);
+			var longerTimeStep = parseFloat(smallerTimeStep) / 60;
 			
 			var lastT = 0;
 			
@@ -369,8 +383,7 @@
 					};
 					
 					inputBindings();
-					var cameraOnEarthAtJupiter = solarSystemFramework.setCameraOnEarthAtJupiter(o501, o502, o503, o504);
-					cameraOnEarthAtJupiter.collisionPlane.setReportCallback(reportTransitEvent);
+					var cameraOnEarthAtJupiter = solarSystemFramework.setCameraOnEarthAtJupiter(o501, o502, o503, o504, reportTransitEvent);
 					ready();
 					
 					window.setTimeout(function() {
