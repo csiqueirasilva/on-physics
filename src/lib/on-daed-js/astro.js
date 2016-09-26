@@ -676,9 +676,9 @@
 
         day += (second / 3600 + minute / 60 + hour) / 24;
 
-        compareDate.setUTCDate(day);
-        compareDate.setUTCMonth(month - 1);
         compareDate.setUTCFullYear(year);
+        compareDate.setUTCMonth(month - 1);
+		compareDate.setUTCDate(day);
 
         var itDate;
 
