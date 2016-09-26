@@ -18,6 +18,7 @@ function PhysSolarSystem (imgPath) {
 	var LABEL_SCALE_FACT = 0.1;
 	var EARTH_MASS = 0.000003003; // in solar mass
 	var UA = 149597870.7; //km
+	var UA_LIGHT_SEC = 149597870.7 / 299792.458; // sec
 	var EARTH_RADIUS = 4.2587504555972266254990218921612e-5; // AU
 	
 	PhysSolarSystem.prototype.getUA = function () {
@@ -332,6 +333,10 @@ function PhysSolarSystem (imgPath) {
 			};
 			dstObj.swapToSphere();
 		}
+	};
+	
+	PhysSolarSystem.prototype.getEarthJupiterLightTravelTime = function() {
+		return UA_LIGHT_SEC * (this._objects[3].position.clone().sub(this._objects[5].position.clone())).length();
 	};
 	
 	PhysSolarSystem.prototype.setCameraOnEarthAtJupiter = function setCameraOnEarthAtJupiter (IO, Europa, Ganymede, Callisto) {

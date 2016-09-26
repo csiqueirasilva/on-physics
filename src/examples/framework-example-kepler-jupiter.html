@@ -145,9 +145,9 @@
 			var JD;
 			
 			do {
-				var dt = prompt("INPUT DATE (01-01-1980 <= DATE <= 31-12-2079):", "04-01-2014");
+				var dt = prompt("INPUT DATE (01-01-1980 <= DATE <= 31-12-2079):", "01-01-2016");
 				var arr = dt.split("-");
-				JD = ON_DAED.ASTRO.getJulianFromGregorian(parseInt(arr[0]), parseInt(arr[1]), parseInt(arr[2]), 0, 26);
+				JD = ON_DAED.ASTRO.getJulianFromGregorian(parseInt(arr[0]), parseInt(arr[1]), parseInt(arr[2]), 0, 0);
 				console.log(JD);
 			} while (!JD || isNaN(JD) || JD < 2444240.0 || JD > 2480765.0);
 			
@@ -197,7 +197,9 @@
 
 			function reportTransitEvent (data) {
 				var str = data.name + " " + data.state;
-				var date = formatDate(ON_DAED.ASTRO.getDateFromJulian(data.date));
+				var originalDate = ON_DAED.ASTRO.getDateFromJulian(data.date);
+				originalDate.setUTCSeconds(originalDate.getUTCSeconds() + solarSystemFramework.getEarthJupiterLightTravelTime());
+				var date = formatDate(originalDate);
 				var el = document.getElementById('report-box');
 				el.innerHTML = "<div class='" + data.name + "'>" + str + " on " + date + "</div>" + el.innerHTML;
 				if(stopsOnEvent) {
@@ -207,7 +209,7 @@
 			}
 			
 			var smallerTimeStep = document.getElementById('speed-icr').innerHTML;
-			var longerTimeStep = parseFloat(smallerTimeStep) / 60;
+			var longerTimeStep = parseFloat(smallerTimeStep) / (60 * 1000);
 			
 			var lastT = 0;
 			
