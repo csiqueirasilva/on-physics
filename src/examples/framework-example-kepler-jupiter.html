@@ -111,7 +111,7 @@
 	
 		<div id="info-box">
 			<div id="pausar-tempo">Restart time</div>
-			<div id="speed-icr">0.0006945</div>
+			<div id="speed-icr">1-min step</div>
 		
 			<div id="info-distancia"></div>
 			<div id="info-tempo"></div>
@@ -222,9 +222,12 @@
 				}
 			}
 			
-			var smallerTimeStep = document.getElementById('speed-icr').innerHTML;
-			var longerTimeStep = parseFloat(smallerTimeStep) / 60;
+			var longerTimeStep = 0.0006945;
+			var smallerTimeStep = longerTimeStep / 60;
 			
+			var longerTimeStepLabel = "1-min step";
+			var smallerTimeStepLabel = "1-sec step";
+	
 			var lastT = 0;
 			
 			function inputBindings() {
@@ -234,16 +237,16 @@
 						physFramework.timeInterval = 0;
 						this.innerHTML = "Restart time";
 					} else {
-						physFramework.timeInterval = parseFloat(document.getElementById('speed-icr').innerHTML);
+						physFramework.timeInterval = document.getElementById('speed-icr').innerHTML === longerTimeStepLabel ? longerTimeStep : smallerTimeStep;
 						this.innerHTML = "Stop time";
 					}
 				}
 				
 				document.getElementById('speed-icr').onclick = function(ev) {
-					if(this.innerHTML === smallerTimeStep) {
-						this.innerHTML = longerTimeStep;
+					if(this.innerHTML === longerTimeStepLabel) {
+						this.innerHTML = smallerTimeStepLabel;
 					} else {
-						this.innerHTML = smallerTimeStep;
+						this.innerHTML = longerTimeStepLabel;
 					}
 				}
 				
