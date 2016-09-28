@@ -335,6 +335,10 @@ function PhysSolarSystem (imgPath) {
 		}
 	};
 	
+	PhysSolarSystem.prototype.getEarthObjectLightTravelTime = function(object) {
+		return UA_LIGHT_SEC * (this._objects[3].position.clone().sub(object.position.clone())).length();
+	};
+	
 	PhysSolarSystem.prototype.getEarthJupiterLightTravelTime = function() {
 		return UA_LIGHT_SEC * (this._objects[3].position.clone().sub(this._objects[5].position.clone())).length();
 	};
@@ -401,7 +405,7 @@ function PhysSolarSystem (imgPath) {
 
 		function changeStateEarthJupiter (R, r, object, vector) {
 			var distObject = Math.sqrt(vector.x * vector.x + vector.y * vector.y) - r;
-			var stateObject = {date: epochDate + physFramework._accTime, name: object.name, state: object._earthPhysState2D};
+			var stateObject = {date: epochDate + physFramework._accTime, name: object.name, state: object._earthPhysState2D, object: object};
 							   
 			if(distObject <= R && distObject !== 0) {
 				
@@ -427,7 +431,7 @@ function PhysSolarSystem (imgPath) {
 		
 		function changeStateSunJupiter (R, r, object, vector) {
 			var distObject = Math.sqrt(vector.x * vector.x + vector.y * vector.y) - r;
-			var stateObject = {date: epochDate + physFramework._accTime, name: object.name, state: object._sunPhysState2D};
+			var stateObject = {date: epochDate + physFramework._accTime, name: object.name, state: object._sunPhysState2D, object: object};
 							   
 			if(distObject <= R && distObject !== 0) {
 				
@@ -513,7 +517,7 @@ function PhysSolarSystem (imgPath) {
 	var lastFetchJD = null;
 	var count = 0;
 	var SERVER_ADDR = "http://daed-dev.on.br";
-	
+
 	PhysSolarSystem.prototype.fetchGalileoMoonsData = function fetchGalileoMoonsData (JDstep, IO, Europa, Ganymede, Callisto) {
 
 		var JD = parseFloat(this._epochDate) + parseFloat(JDstep);

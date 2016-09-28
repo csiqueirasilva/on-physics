@@ -212,7 +212,7 @@
 			function reportTransitEvent (data) {
 				var str = data.name + " " + data.state;
 				var originalDate = ON_DAED.ASTRO.getDateFromJulian(data.date);
-				originalDate.setUTCSeconds(originalDate.getUTCSeconds() + solarSystemFramework.getEarthJupiterLightTravelTime());
+				originalDate.setUTCSeconds(originalDate.getUTCSeconds() + Math.max(solarSystemFramework.getEarthObjectLightTravelTime(data.object), solarSystemFramework.getEarthJupiterLightTravelTime()));
 				var date = formatDate(originalDate);
 				var el = document.getElementById('report-box');
 				el.innerHTML = "<div class='" + data.name + "'>" + str + " on " + date + "</div>" + el.innerHTML;
