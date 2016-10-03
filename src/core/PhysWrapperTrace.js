@@ -16,7 +16,7 @@ var PhysWrapperTrace = (function() {
 	PhysWrapperTrace.prototype._TRACES = [];
 	
 	PhysWrapperTrace.prototype.addTracingLine = function (worldObject, color) {
-		var mat = new THREE.LineDashedMaterial({
+		var mat = new THREE.LineBasicMaterial({
 			color: color,
 			linewidth: 1,
 			dashSize: 1,
@@ -46,6 +46,8 @@ var PhysWrapperTrace = (function() {
 	};
 	
 	PhysWrapperTrace.prototype.initTrace = function initTrace() {
+		this.position.set(0, 0, 0);
+		
 		for(var i = 0; i < this._TRACES.length; i++) {
 			var traceGeo = this._TRACES[i].geometry;
 			var obj = this._TRACES[i]._worldObject;
@@ -104,10 +106,21 @@ var PhysWrapperTrace = (function() {
 		var interval = t || 100;
 	
 		var o = this;
-	
-		window.setInterval(function() {
+		
+		this.clearTracingLines();
+		
+		this._tracingInterval = window.setInterval(function() {
 			o.updateTrace();
 		}, interval);
+	
+	};
+	
+	PhysWrapperTrace.prototype.clearTracingLines = function ClearTracingLines () {
+	
+		if(this._tracingInterval) {
+			window.clearInterval(this._tracingInterval);
+			this._tracingInterval = null;
+		}
 	
 	};
 	
