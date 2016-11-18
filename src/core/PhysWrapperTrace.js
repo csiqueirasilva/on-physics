@@ -30,7 +30,8 @@ var PhysWrapperTrace = (function() {
 		worldObject.updateMatrixWorld();
 		
 		for (var i = 0; i < this._nVerts; i++) {
-			var v = this.worldToLocal(worldObject.position).clone();
+			var worldPos = worldObject.localToWorld(new THREE.Vector3());
+			var v = this.worldToLocal(worldPos);
 			traceGeo.vertices.push(v);
 		}
 
@@ -55,7 +56,8 @@ var PhysWrapperTrace = (function() {
 			this.updateMatrixWorld();
 			obj.updateMatrixWorld();
 
-			var pos = this.worldToLocal(obj.position.clone());
+			var worldPos = obj.localToWorld(new THREE.Vector3());
+			var pos = this.worldToLocal(worldPos);
 			pos.multiplyScalar(0.9995); // against z-fighting
 			
 			for (var j = 0; j < traceGeo.vertices.length; j++) {
@@ -79,7 +81,8 @@ var PhysWrapperTrace = (function() {
 			this.updateMatrixWorld();
 			obj.updateMatrixWorld();
 			
-			var pos = this.worldToLocal(obj.position.clone());
+			var worldPos = obj.localToWorld(new THREE.Vector3());
+			var pos = this.worldToLocal(worldPos);
 			pos.multiplyScalar(0.9995); // against z-fighting
 			
 			if(traceGeo.vertices[traceGeo.vertices.length - 1].clone().add(pos.clone().multiplyScalar(-1)).length() >= this._testLength) {
