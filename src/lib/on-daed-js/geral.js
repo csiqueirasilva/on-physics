@@ -172,7 +172,7 @@ var ON_DAED = (function () {
 
     o.wikipediaSnippet = function (conteudo, elementoHTML, stripImgButton, primeiroParagrafo) {
         var tituloWiki = conteudo.parse.title;
-        var baseWikipediaUrl = 'http://pt.wikipedia.org';
+        var baseWikipediaUrl = 'https://pt.wikipedia.org';
         var linkArtigo = tituloWiki.replace(' ', '_');
 
         var htmlString = '<div id="titulo-wiki"><h1>%TITULO%</h1></div><div id="conteudo-wiki">%CONTEUDO%</div>';
@@ -220,7 +220,7 @@ var ON_DAED = (function () {
                 if (stripImgButton) {
                     $(this).replaceWith("<span>" + $(this).html() + "</span>");
                 } else {
-                    $(this).attr('href', 'http://pt.wikipedia.org' + $(this).attr('href'));
+                    $(this).attr('href', 'https://pt.wikipedia.org' + $(this).attr('href'));
                 }
             }
         });

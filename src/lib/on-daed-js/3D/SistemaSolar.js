@@ -170,7 +170,7 @@ ON_DAED["3D"].SistemaSolar = function (scene, camera, options) {
 
         planoGalatico.data = {};
 
-        planoGalatico.data.conteudo = "http://pt.wikipedia.org/w/api.php?action=parse&page=Via_Láctea&format=json&prop=text";
+        planoGalatico.data.conteudo = "https://pt.wikipedia.org/w/api.php?action=parse&page=Via_Láctea&format=json&prop=text";
 
         planoGalatico.mover = function (event) {
             if (window.innerWidth >= 1024 && window.innerHeight >= 768) {
